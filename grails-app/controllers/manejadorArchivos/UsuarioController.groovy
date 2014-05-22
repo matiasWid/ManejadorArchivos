@@ -1,4 +1,4 @@
-package manejadoArchivos
+package manejadorArchivos
 
 class UsuarioController {
 
@@ -7,10 +7,10 @@ class UsuarioController {
     def login = {}
     
     def authenticate = {
-        def user = Usuario.findByNickAndContraseña(params.nick, params.contraseña)
+        def user = dominio.Usuario.findByNickAndContrasenia(params.nick, params.contrasenia)
         if(user){
             session.user = user
-            flash.message = "Hello ${user.Nombre}!"
+            flash.message = "Hello ${user.nombre}!"
             redirect(action:"login")
             
         }else{
@@ -20,7 +20,7 @@ class UsuarioController {
     }
     
     def logout = {
-        flash.message = "Goodbye ${session.Usuario.nick}"
+        flash.message = "Goodbye ${session.user.nick}"
         session.Usuario = null
         redirect(action:"login")
     }

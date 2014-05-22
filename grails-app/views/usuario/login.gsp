@@ -33,15 +33,15 @@
                             <g:message code="usuario.nick.label" default="Nombre de usuario" />
                             
                         </label>
-                        <g:textField name="Nombre" value="${usuarioInstance?.nick}"/>
+                        <g:textField name="nick" value="${usuarioInstance?.nick}"/>
                     </div>
                     
                     <div class="fieldcontain ${hasErrors(bean: usuarioInstance, field: 'contraseña', 'error')} ">
                         <label for="contraseña">
-                            <g:message code="usuario.password.label" default="Password" />
+                            <g:message code="usuario.contrasenia.label" default="Contraseña" />
                             
                         </label>
-                        <g:field type="password" name="password" value="${usuarioInstance?.password}"/>
+                        <g:field type="password" name="contrasenia" value="${usuarioInstance?.contrasenia}"/>
                     </div>
                 </fieldset>
                 <fieldset class="buttons">
