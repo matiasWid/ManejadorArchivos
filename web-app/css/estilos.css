@@ -1,2 +1,117 @@
-@CHARSET "ISO-8859-1";
-.
+body {
+	background-color: rgb(241, 241, 241);
+}
+
+div.directorioPropiedades {
+	display: flex;
+	width: 80%;
+	height: 550px;
+	margin: 0 auto;
+	margin-top: 3%;
+	
+	
+}
+
+.directorioPropiedades div {
+	border-color: black;
+	width: 33%;
+	height: 100%;
+	border-style: solid;
+}
+
+header {
+	position: absolute;
+	left: 0pt;
+	top: 0pt;
+	width: 100%;
+	min-width: 980px;
+	border-color: rgb(0, 0, 0);
+	background-color: rgb(45, 45, 45);
+	color: rgb(187, 187, 187);
+	font: 13px/27px Arial, sans-serif;
+	font-weight: bold;
+}
+
+/* 
+   =======================================
+   ============== TOP TAB ================
+   =======================================
+*/
+.botonesAccion nav {
+	list-style: none outside none;
+	display: block;
+	width: 720px;
+	height: 30px;
+	margin: 0pt;
+	padding: 0pt;
+	margin-left: 19pt;
+	overflow: hidden;
+}
+
+.botonesAccion nav ul{
+	
+	margin: 0pt;
+	
+}
+
+ .botonesAccion nav ul li {
+	position: relative;
+	display: inline-block;
+	line-height: 27px;
+	padding-left: 6pt;
+	padding-right: 6pt;
+	padding-top: 2pt;
+	vertical-align: top;
+}
+
+ .botonesAccion nav ul li a {
+	text-decoration: none;
+	color: rgb(187, 187, 187);
+}
+
+.botonesAccion a:hover {
+	color: rgb(255, 255, 255);
+}
+
+
+ div div ul {
+	margin: 0 auto 0 auto;
+	width: 330px;
+}
+
+ 	div div ul li {
+		padding: 20px;	
+	}
+	
+	div div ul li a, div div ul li a:link, div div ul li a:visited {
+		outline: none;
+		text-align: rIght;
+	}
+
+div div a.folder_link {
+	display: block;
+	width: 270px;
+	height: 87px;
+	background: url(images/expanded.jpg) no-repeat 0 -87px;
+	color: #838383;
+	font-size: 24px;
+	text-decoration: none;
+	line-height: 87px;
+}
+
+	div div a.folder_link:hover {
+		background-position: 0 0;
+		text-decoration: underline;
+	}
+
+div div a.folder_link_collapsed {
+	background: url(images/collapsed.jpg) no-repeat 0 -87px;
+}
+
+div div a.folder_link_expanded {
+	background: url(images/expanded.jpg) no-repeat 0 -87px;
+}
+	
+div div div.folder_content {
+	padding: 0 0 0 25px;
+}

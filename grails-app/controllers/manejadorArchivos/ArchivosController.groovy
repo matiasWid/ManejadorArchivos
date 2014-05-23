@@ -1,6 +1,9 @@
-package manejadorarchivos
+package manejadorArchivos
 
 class ArchivosController {
 
-    def index() { }
+    def index() {
+	}
+	def archivos = {}
+	
 }
