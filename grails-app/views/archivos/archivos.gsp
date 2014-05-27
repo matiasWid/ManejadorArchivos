@@ -31,95 +31,20 @@
 	</header>
 	<div class="directorioPropiedades">
 		<div id="listaDirectorios">
-			<ul>
-				<li><a href="#" class="folder_link" id="folder_link_1">Folder
-						1</a>
-					<div class="folder_content" id="folder_content_1">
-						<p>This is the content that goes in the folder. Text is added
-							for the purpose of taking up space. Nothing special here. This is
-							the content that goes in the folder. Text is added for the
-							purpose of taking up space. Nothing special here. This is the
-							content that goes in the folder. Text is added for the purpose of
-							taking up space. Nothing special here. This is the content that
-							goes in the folder. Text is added for the purpose of taking up
-							space. Nothing special here. This is the content that goes in the
-							folder. Text is added for the purpose of taking up space. Nothing
-							special here. This is the content that goes in the folder. Text
-							is added for the purpose of taking up space. Nothing special
-							here. This is the content that goes in the folder. Text is added
-							for the purpose of taking up space. Nothing special here.</p>
-					</div></li>
-				<li><a href="#" class="folder_link" id="folder_link_2">Folder
-						2</a>
-					<div class="folder_content" id="folder_content_2">
-						<p>This is the content that goes in the folder. Text is added
-							for the purpose of taking up space. Nothing special here. This is
-							the content that goes in the folder. Text is added for the
-							purpose of taking up space. Nothing special here. This is the
-							content that goes in the folder. Text is added for the purpose of
-							taking up space. Nothing special here. This is the content that
-							goes in the folder. Text is added for the purpose of taking up
-							space. Nothing special here. This is the content that goes in the
-							folder. Text is added for the purpose of taking up space. Nothing
-							special here. This is the content that goes in the folder. Text
-							is added for the purpose of taking up space. Nothing special
-							here. This is the content that goes in the folder. Text is added
-							for the purpose of taking up space. Nothing special here.</p>
-					</div></li>
-				<li><a href="#" class="folder_link" id="folder_link_3">Folder
-						3</a>
-
-					<div class="folder_content" id="folder_content_3">
-						<p>This is the content that goes in the folder. Text is added
-							for the purpose of taking up space. Nothing special here. This is
-							the content that goes in the folder. Text is added for the
-							purpose of taking up space. Nothing special here. This is the
-							content that goes in the folder. Text is added for the purpose of
-							taking up space. Nothing special here. This is the content that
-							goes in the folder. Text is added for the purpose of taking up
-							space. Nothing special here. This is the content that goes in the
-							folder. Text is added for the purpose of taking up space. Nothing
-							special here. This is the content that goes in the folder. Text
-							is added for the purpose of taking up space. Nothing special
-							here. This is the content that goes in the folder. Text is added
-							for the purpose of taking up space. Nothing special here.</p>
-					</div></li>
-				<li><a href="#" class="folder_link" id="folder_link_4">Folder
-						4</a>
-					<div class="folder_content" id="folder_content_4">
-						<p>This is the content that goes in the folder. Text is added
-							for the purpose of taking up space. Nothing special here. This is
-							the content that goes in the folder. Text is added for the
-							purpose of taking up space. Nothing special here. This is the
-							content that goes in the folder. Text is added for the purpose of
-							taking up space. Nothing special here. This is the content that
-							goes in the folder. Text is added for the purpose of taking up
-							space. Nothing special here. This is the content that goes in the
-							folder. Text is added for the purpose of taking up space. Nothing
-							special here. This is the content that goes in the folder. Text
-							is added for the purpose of taking up space. Nothing special
-							here. This is the content that goes in the folder. Text is added
-							for the purpose of taking up space. Nothing special here.</p>
-					</div></li>
-				<li><a href="#" class="folder_link" id="folder_link_5">Folder
-						5</a>
-					<div class="folder_content" id="folder_content_5">
-						<p>This is the content that goes in the folder. Text is added
-							for the purpose of taking up space. Nothing special here. This is
-							the content that goes in the folder. Text is added for sthe
-							purpose of taking up space. Nothing special here. This is the
-							content that goes in the folder. Text is added for the purpose of
-							taking up space. Nothing special here. This is the content that
-							goes in the folder. Text is added for the purpose of taking up
-							space. Nothing special here. This is the content that goes in the
-							folder. Text is added for the purpose of taking up space. Nothing
-							special here. This is the content that goes in the folder. Text
-							is added for the purpose of taking up space. Nothing special
-							here. This is the content that goes in the folder. Text is added
-							for the purpose of taking up space. Nothing special here.</p>
-					</div></li>
-			</ul>
-
+			 <table>
+                    <thead>
+                        <tr>
+                            <g:sortableColumn property="path" title="Ruta" colspan="3"/>
+                       </tr>
+                    </thead>
+                    <tbody>
+                    <g:each in="${lista}" status="i" var="listaInstance">
+                        <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+                            <td> <label>${listaInstance.toString()}</label></td>
+                        	</tr>
+                    </g:each>
+                    </tbody>
+                </table>		
 		</div>
 		<div id="listaFicheros"></div>
 		<div id="listaPropiedades"></div>

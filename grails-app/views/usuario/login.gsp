@@ -2,18 +2,12 @@
 <!doctype html>
 <html>
 <head>
-<r:require modules="uplodr" />
-<r:layoutResources />
 <meta name="layout" content="main">
 <g:set var="entityName" value="ProjectTracker Login" />
-<title><g:message code="ProjectTracker Login"
+<title><g:message code="Login"
 		args="[entityName]" /></title>
 </head>
 <body>
-
-	<uploadr:demo/>
-    <r:layoutResources/>
-
 	<a href="#create-usuario" class="skip" tabindex="-1"><g:message
 			code="default.link.skip.label" default="Skip to content&hellip;" /></a>
 	<div class="nav" role="navigation">
