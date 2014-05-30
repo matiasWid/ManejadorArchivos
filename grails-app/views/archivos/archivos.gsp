@@ -40,7 +40,7 @@
                     <tbody>
                     <g:each in="${lista}" status="i" var="listaInstance">
                         <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-                            <td> <label>${listaInstance.toString()}</label></td>
+                            <td> <a href=${listaInstance.toString()}>${listaInstance.toString()}</a></td>
                         	</tr>
                     </g:each>
                     </tbody>
