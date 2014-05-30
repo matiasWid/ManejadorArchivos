@@ -5,8 +5,10 @@
 <head>
 <link rel="stylesheet"
 	href="${resource(dir: 'css', file: 'estilos.css')}" type="text/css">
-<script src="${resource(dir: 'js', file: 'jquery-1.3.2.min.js')}" type="text/javascript"></script>
-<script src="${resource(dir: 'js', file: 'colapsarDirectorios.js')}" type="text/javascript"></script>
+<script src="${resource(dir: 'js', file: 'jquery-1.3.2.min.js')}"
+	type="text/javascript"></script>
+<script src="${resource(dir: 'js', file: 'colapsarDirectorios.js')}"
+	type="text/javascript"></script>
 <meta charset="utf-8">
 <title>Manejador de archivos</title>
 
@@ -31,20 +33,28 @@
 	</header>
 	<div class="directorioPropiedades">
 		<div id="listaDirectorios">
-			 <table>
-                    <thead>
-                        <tr>
-                            <g:sortableColumn property="path" title="Ruta" colspan="3"/>
-                       </tr>
-                    </thead>
-                    <tbody>
-                    <g:each in="${lista}" status="i" var="listaInstance">
-                        <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-                            <td> <a href=${listaInstance.toString()}>${listaInstance.toString()}</a></td>
-                        	</tr>
-                    </g:each>
-                    </tbody>
-                </table>		
+			<g:form action="archivo">
+				
+				<table>
+					<thead>
+						<tr>
+							<g:sortableColumn property="path" title="Ruta" colspan="3" />
+						</tr>
+					</thead>
+					<tbody>
+						<g:each in="${lista}" status="i" var="listaInstance">
+
+							<tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+								<td><label> 
+								<g:link action="archivos" params="[id: 'images/skin']">
+											${listaInstance.toString().substring(listaInstance.toString().lastIndexOf('\\')+1)}
+										</g:link></label></td>
+							</tr>
+
+						</g:each>
+					</tbody>
+				</table>
+			</g:form>
 		</div>
 		<div id="listaFicheros"></div>
 		<div id="listaPropiedades"></div>

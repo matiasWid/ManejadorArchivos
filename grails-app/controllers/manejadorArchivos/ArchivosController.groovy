@@ -1,11 +1,17 @@
 package manejadorArchivos
 
 class ArchivosController {
+	
 	 def archivos= {
 		 def lista = []
+		 if(!params.id){
 		 new File (grailsApplication.config.images.location.toString()).eachDir {
-			   dir -> lista.add(dir.getPath().substring(dir.getPath().lastIndexOf('\\')+1))}
-		
+			   dir -> lista.add(dir.getPath())}
+		 }else{
+		 def f = new File (params.id)
+		 f.eachDir {
+			 dir -> lista.add(dir.getPath())}
+		 }
 		return [ lista: lista]
 	 }	
 	 
@@ -25,7 +31,8 @@ class ArchivosController {
 		}
 		[ fileResourceInstanceList: fileResourceInstanceList ]
 	}
-
+	
+	
 	def delete = {
 		def filename = params.id.replace('###', '.')
 		def file = new File( grailsApplication.config.images.location.toString() + File.separatorChar +   filename )
