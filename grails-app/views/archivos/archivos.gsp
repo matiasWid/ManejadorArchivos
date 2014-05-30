@@ -40,21 +40,44 @@
 					</tr>
 				</thead>
 				<tbody>
-					<g:each in="${lista}" status="i" var="listaInstance">
-						
+					<g:each in="${listaDirectorios}" status="i" var="listaInstance">
 						<tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-							<td><label>
-							<g:link action="archivos" 
-							id="${listaInstance}">
-							${listaInstance.toString()}
-							</g:link></label></td>
+							<td>
+								<label>
+								
+									<g:link action='archivos' params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
+									${listaInstance.toString()}
+									</g:link>
+								</label>
+							</td>
 						</tr>
-						
 					</g:each>
 				</tbody>
 			</table>
 		</div>
-		<div id="listaFicheros"></div>
+		<div id="listaFicheros">
+		<table>
+				<thead>
+					<tr>
+						<g:sortableColumn property="path" title="Ruta" colspan="3" />
+					</tr>
+				</thead>
+				<tbody>
+					<g:each in="${listaArchivos}" status="i" var="listaInstance">
+						<tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+							<td>
+								<label>
+								<g:checkBox name="${listaInstance.replace(File.separatorChar.toString(), '#')}" value="${false}" />
+									<g:link action='archivos' params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
+									${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}
+									</g:link>
+								</label>
+							</td>
+						</tr>
+					</g:each>
+				</tbody>
+			</table>
+		</div>
 		<div id="listaPropiedades"></div>
 	</div>
 </body>

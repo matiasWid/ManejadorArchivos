@@ -1,20 +1,42 @@
 package manejadorArchivos
 
+import groovy.io.FileType;
+
 class ArchivosController {
-	 def archivos= {
-		 def lista = []
-		 if(!params.id){
-		 new File (grailsApplication.config.images.location.toString()).eachDir {
-			   dir -> lista.add(dir.getPath().substring(dir.getPath().lastIndexOf('\\')+1))}
-		 }else{
-		 def f = new File ((grailsApplication.config.images.location.toString())+ "\\" + params.id)
-		 f.eachDir {
-			 dir -> lista.add(dir.getPath().toString())}
-		 }
-		return [ lista: lista]
-	 }	
-	 
-	def index = { redirect(action:list,params:params) }
+	def archivos= {
+		def listaDirectorios = []
+		def listaArchivos = []
+		
+		if(!params.ruta){
+			new File (grailsApplication.config.images.location.toString()).eachDir {
+				dir ->listaDirectorios.add(dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
+			}
+		}else{
+			String ruta = params.ruta
+			def f = new File(grailsApplication.config.images.location.toString() + File.separatorChar
+				 + params.ruta.replace('#',File.separatorChar.toString()))
+			f.eachDir { 
+				dir ->listaDirectorios.add(params.ruta.replace('#',File.separatorChar.toString()) + File.separatorChar + dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
+				}
+		}
+		
+		if(!params.ruta){
+			new File (grailsApplication.config.images.location.toString()).eachFile(FileType.FILES) {
+				
+				dir ->listaArchivos.add(dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
+			}
+		}else{
+			String ruta = params.ruta
+			def f = new File(grailsApplication.config.images.location.toString() + File.separatorChar
+				 + params.ruta.replace('#',File.separatorChar.toString()))
+			f.eachFile(FileType.FILES){
+				dir ->listaArchivos.add(params.ruta.replace('#',File.separatorChar.toString()) + File.separatorChar + dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
+				}
+		}
+		return [ listaDirectorios: listaDirectorios, listaArchivos:listaArchivos]
+	}
+
+	def index = { redirect(action:archivos) }
 	static transactional = true
 
 	def allowedMethods = []
@@ -30,8 +52,8 @@ class ArchivosController {
 		}
 		[ fileResourceInstanceList: fileResourceInstanceList ]
 	}
-	
-	
+
+
 	def delete = {
 		def filename = params.id.replace('###', '.')
 		def file = new File( grailsApplication.config.images.location.toString() + File.separatorChar +   filename )
@@ -43,11 +65,10 @@ class ArchivosController {
 	def upload = {
 		def f = request.getFile('fileUpload')
 		if(!f.empty) {
-			
+
 			new File( grailsApplication.config.images.location.toString() ).mkdirs()
 			f.transferTo( new File( grailsApplication.config.images.location.toString() + File.separatorChar + f.getOriginalFilename() ) )
 			flash.message = 'Your file has been uploaded'
-			
 		}
 		else {
 			flash.message = 'file cannot be empty'
