@@ -3,6 +3,9 @@
 <!doctype html>
 <html lang="es">
 <head>
+
+<script src="${resource(dir: 'js', file: 'prototype.js')}"
+	type="text/javascript"></script>
 <link rel="stylesheet"
 	href="${resource(dir: 'css', file: 'estilos.css')}" type="text/css">
 <script src="${resource(dir: 'js', file: 'jquery-1.3.2.min.js')}"
@@ -42,21 +45,18 @@
 				<tbody>
 					<g:each in="${listaDirectorios}" status="i" var="listaInstance">
 						<tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-							<td>
-								<label>
-								
-									<g:link action='archivos' params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
-									${listaInstance.toString()}
+							<td><label> <g:link action='archivos'
+										params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
+										${listaInstance.toString()}
 									</g:link>
-								</label>
-							</td>
+							</label></td>
 						</tr>
 					</g:each>
 				</tbody>
 			</table>
 		</div>
 		<div id="listaFicheros">
-		<table>
+			<table>
 				<thead>
 					<tr>
 						<g:sortableColumn property="path" title="Ruta" colspan="3" />
@@ -65,20 +65,27 @@
 				<tbody>
 					<g:each in="${listaArchivos}" status="i" var="listaInstance">
 						<tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-							<td>
-								<label>
-								<g:checkBox name="${listaInstance.replace(File.separatorChar.toString(), '#')}" value="${false}" />
-									<g:link action='archivos' params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
-									${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}
-									</g:link>
-								</label>
-							</td>
+							<td><label> <g:checkBox
+										name="${listaInstance.replace(File.separatorChar.toString(), '#')}"
+										value="${false}" 
+										onclick="${remoteFunction(controller: 'archivos', action:'listaPropiedades',
+												params:'\'completed=\' + this.value' + '\'&fileName=\' + this.name', 
+												update:[success:'listaPropiedades', failure:'listaPropiedades'])}" /> 
+												<g:link action='archivos'
+													params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
+													${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}
+												</g:link>
+							</label></td>
 						</tr>
 					</g:each>
 				</tbody>
 			</table>
 		</div>
-		<div id="listaPropiedades"></div>
+		<div id="listaPropiedades">
+			<p>
+				${propiedades}
+			</p>
+		</div>
 	</div>
 </body>
 </html>

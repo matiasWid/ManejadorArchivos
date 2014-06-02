@@ -4,6 +4,7 @@ import groovy.io.FileType;
 
 class ArchivosController {
 	def archivos= {
+
 		def listaDirectorios = []
 		def listaArchivos = []
 		
@@ -36,6 +37,10 @@ class ArchivosController {
 		return [ listaDirectorios: listaDirectorios, listaArchivos:listaArchivos]
 	}
 
+	def listaPropiedades= {
+		[propiedades:"prueba"]
+	}
+	
 	def index = { redirect(action:archivos) }
 	static transactional = true
 
