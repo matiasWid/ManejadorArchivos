@@ -37,7 +37,14 @@ class ArchivosController {
 		return [ listaDirectorios: listaDirectorios, listaArchivos:listaArchivos]
 	}
 
-	def index = { redirect(action:list,params:params) }
+	def listaPropiedades= {
+		String nombre = params.nombre
+		String marcado = params.marcado
+		        render params.marcado + params.nombre
+		
+	}
+	
+	def index = { redirect(action:archivos) }
 	static transactional = true
 
 	def allowedMethods = []
