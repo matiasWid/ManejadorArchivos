@@ -32,9 +32,7 @@
 
 	</header>
 	<div class="directorioPropiedades">
-		<div id="listaDirectorios">
-			<g:form action="archivo">
-				
+		<div id="listaDirectorios">				
 				<table>
 					<thead>
 						<tr>
