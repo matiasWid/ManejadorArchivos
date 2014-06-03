@@ -38,7 +38,10 @@ class ArchivosController {
 	}
 
 	def listaPropiedades= {
-		[propiedades:"prueba"]
+		String nombre = params.nombre
+		String marcado = params.marcado
+		        render params.marcado + params.nombre
+		
 	}
 	
 	def index = { redirect(action:archivos) }

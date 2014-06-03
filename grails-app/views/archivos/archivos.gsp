@@ -3,17 +3,11 @@
 <!doctype html>
 <html lang="es">
 <head>
-
-<script src="${resource(dir: 'js', file: 'prototype.js')}"
-	type="text/javascript"></script>
-<link rel="stylesheet"
-	href="${resource(dir: 'css', file: 'estilos.css')}" type="text/css">
-<script src="${resource(dir: 'js', file: 'jquery-1.3.2.min.js')}"
-	type="text/javascript"></script>
-<script src="${resource(dir: 'js', file: 'colapsarDirectorios.js')}"
-	type="text/javascript"></script>
-<meta charset="utf-8">
-<title>Manejador de archivos</title>
+	<link rel="stylesheet"
+			href="${resource(dir: 'css', file: 'estilos.css')}" type="text/css">
+	<script src="${resource(dir: 'js', file: 'jquery.js')}"></script>
+	<meta charset="utf-8">
+	<title>Manejador de archivos</title>
 
 </head>
 <body>
@@ -66,15 +60,15 @@
 					<g:each in="${listaArchivos}" status="i" var="listaInstance">
 						<tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
 							<td><label> <g:checkBox
-										name="${listaInstance.replace(File.separatorChar.toString(), '#')}"
-										value="${false}" 
-										onclick="${remoteFunction(controller: 'archivos', action:'listaPropiedades',
-												params:'\'completed=\' + this.value' + '\'&fileName=\' + this.name', 
-												update:[success:'listaPropiedades', failure:'listaPropiedades'])}" /> 
-												<g:link action='archivos'
-													params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
-													${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}
-												</g:link>
+										name="fileCheck.${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}"
+										value="${false}"
+										onchange="${remoteFunction(controller: 'archivos', action:'listaPropiedades',
+													params:'\'marcado=\' + this.value + \'&nombre=\' + this.name',
+													update:[success:'listaPropiedades', failure:'listaPropiedades'])}" />
+									<g:link action='archivos'
+										params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
+										${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}
+									</g:link>
 							</label></td>
 						</tr>
 					</g:each>
@@ -82,9 +76,7 @@
 			</table>
 		</div>
 		<div id="listaPropiedades">
-			<p>
-				${propiedades}
-			</p>
+		
 		</div>
 	</div>
 </body>
