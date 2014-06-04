@@ -1,5 +1,6 @@
 package manejadorArchivos
 
+import grails.converters.JSON
 import groovy.io.FileType;
 
 class ArchivosController {
@@ -41,23 +42,16 @@ class ArchivosController {
 	
 
 	def listaPropiedades= {
-		//String nombre = params.nombre
-		//String marcado = params.marcado
-		//        render params.marcado + params.nombre
-		/*def elementos =[]
-		def invoiceList = session.invoiceList
-		params.each {
-		if (it.key.contains("fileCheck.")){
-	        if (it.value.contains("on")){
-	            //InvoiceItem invoiceItem = 
-	        
-				elementos.add(invoiceList.get((it.key - "fileCheck.") as Integer))
-				}
-			}
+		/*def otraLista = []
+		def lista = params.lista
+		def listaCheckBox = ['nombre', 'chequeado'] as grails.converters.JSON
+		otraLista = [lista:listaCheckBox]
+		println otraLista
+		render lista*/
+		render params.lista() as JSON
 		
-		}*/
-		listaChequeados.add(nombre:params.nombre, chequeado:params.marcado)
-		render listaChequeados
+			
+		  
 	}
 
 	def limpiarChequeados = {
