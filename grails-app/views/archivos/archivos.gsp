@@ -1,3 +1,4 @@
+<%@page import="manejadorArchivos.ArchivosController"%>
 <%@ page import="dominio.Archivo"%>
 
 <!doctype html>
@@ -60,7 +61,8 @@
 					<g:each in="${listaArchivos}" status="i" var="listaInstance">
 						<tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
 							<td><label> <g:checkBox
-										name="fileCheck.${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}"
+										id="check${i}"
+										name="${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}"
 										value="${false}"
 										onchange="${remoteFunction(controller: 'archivos', action:'listaPropiedades',
 													params:'\'marcado=\' + this.value + \'&nombre=\' + this.name',

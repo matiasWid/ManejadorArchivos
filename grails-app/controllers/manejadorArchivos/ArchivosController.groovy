@@ -36,12 +36,32 @@ class ArchivosController {
 		}
 		return [ listaDirectorios: listaDirectorios, listaArchivos:listaArchivos]
 	}
+	
+	def listaChequeados=[]
+	
 
 	def listaPropiedades= {
-		String nombre = params.nombre
-		String marcado = params.marcado
-		        render params.marcado + params.nombre
+		//String nombre = params.nombre
+		//String marcado = params.marcado
+		//        render params.marcado + params.nombre
+		/*def elementos =[]
+		def invoiceList = session.invoiceList
+		params.each {
+		if (it.key.contains("fileCheck.")){
+	        if (it.value.contains("on")){
+	            //InvoiceItem invoiceItem = 
+	        
+				elementos.add(invoiceList.get((it.key - "fileCheck.") as Integer))
+				}
+			}
 		
+		}*/
+		listaChequeados.add(nombre:params.nombre, chequeado:params.marcado)
+		render listaChequeados
+	}
+
+	def limpiarChequeados = {
+		limpiarChequeados = null
 	}
 	
 	def index = { redirect(action:archivos) }
