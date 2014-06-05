@@ -42,16 +42,30 @@ class ArchivosController {
 	
 
 	def listaPropiedades= {
-		/*def otraLista = []
-		def lista = params.lista
-		def listaCheckBox = ['nombre', 'chequeado'] as grails.converters.JSON
-		otraLista = [lista:listaCheckBox]
-		println otraLista
-		render lista*/
-		render params.lista() as JSON
-		
-			
-		  
+	
+		def nombreArchivos = params.lista
+		def nombres = []
+
+		println nombreArchivos
+		for(int i=0;i<nombreArchivos.size();i++)
+		        {
+		            if (nombreArchivos[i] == ",")
+		            {
+		            	println "posicion " + i
+		            	nombres.add(nombreArchivos.substring(0,i).trim())
+		            	println "nombre archivo " + nombreArchivos.substring(0,i).trim()
+		            	nombreArchivos = nombreArchivos.substring(nombreArchivos.substring(0,i).size()+1).trim()
+	            		i= 0
+		            }
+		        }
+		        nombres.add(nombreArchivos.trim())
+			println "nombre archivo " + nombres
+			nombres.each{nombre->
+				println "lista nombres " + nombre
+			}
+
+			println "FIN..."
+		 render (nombres)
 	}
 
 	def limpiarChequeados = {

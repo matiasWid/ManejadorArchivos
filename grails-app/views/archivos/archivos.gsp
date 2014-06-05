@@ -74,24 +74,35 @@
 				</tbody>
 			</table>
 		</div>
-		<div id="listaPropiedades"></div>
+		<div id="listaPropiedades">
+			<g:each in="${nombres}" status="i" var="listaInstance">
+						<tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+							<td><label> <g:link action='archivos'
+										params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
+										${listaInstance.toString()}
+									</g:link>
+							</label></td>
+						</tr>
+					</g:each>
+		</div>
 	</div>
 </body>
 <script type="text/javascript">
     function obtenerMarcados(){
     
-   	var sList = [];
+   	var sList =[];
 
 		$('input[type=checkbox]').each(function () {
 			var nombre = $(this.name);
-		    sList.push("[nombre:" + nombre.selector + " chequeado:" + this.checked + "]");
-
+			if (this.checked){
+		    	sList.push(nombre.selector);
+	    	};
 		});
 		console.log (sList);
-    	        ${remoteFunction(controller: 'archivos', action:'listaPropiedades',
-				params:'\'lista=\' + sList',
-				update:[success:'listaPropiedades', failure:'listaPropiedades'])}
+    	        
+		${remoteFunction(controller: 'archivos', action:'listaPropiedades',
+			params:'\'lista=\' + sList',
+			update:[success:'listaPropiedades', failure:'listaPropiedades'])}
     };
 </script>
 </html>
-
