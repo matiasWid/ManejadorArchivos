@@ -75,15 +75,10 @@
 			</table>
 		</div>
 		<div id="listaPropiedades">
-			<g:each in="${nombres}" status="i" var="listaInstance">
-						<tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-							<td><label> <g:link action='archivos'
-										params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
-										${listaInstance.toString()}
-									</g:link>
-							</label></td>
-						</tr>
-					</g:each>
+			<p>Archivos Seleccionados</p>
+			<div id="archivosSeleccionados">
+				<g:render template="archivos"/>
+			</div>
 		</div>
 	</div>
 </body>
@@ -102,7 +97,7 @@
     	        
 		${remoteFunction(controller: 'archivos', action:'listaPropiedades',
 			params:'\'lista=\' + sList',
-			update:[success:'listaPropiedades', failure:'listaPropiedades'])}
+			update:[success:'archivosSeleccionados', failure:'archivosSeleccionados'])}
     };
 </script>
 </html>
