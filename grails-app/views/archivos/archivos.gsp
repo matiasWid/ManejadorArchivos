@@ -77,7 +77,7 @@
 		<div id="listaPropiedades">
 			<p>Archivos Seleccionados</p>
 			<div id="archivosSeleccionados">
-				<g:render template="archivos"/>
+				<g:render template="listaPropiedades"/>
 			</div>
 		</div>
 	</div>

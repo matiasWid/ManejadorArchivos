@@ -27,6 +27,19 @@ class Archivo {
         tiposoporte: dominio.TipoSoporte]
 
     static constraints = {
-        
+        ruta unique: true
+        //estas constraints son para pobar
+        fechaModificacion nullable:true
+        fechaCreacion nullable:true
+        idioma nullable:true
+        signaturaTopografica nullable:true
+        descripcion nullable:true
+        extension nullable:true
+        usuario nullable:true
+        editorial nullable:true
+        descripcion nullable:true
+        lugar nullable:true
+        estadoconservacion nullable:true
+        formato nullable:true
     }
 }

@@ -8,8 +8,20 @@ div.directorioPropiedades {
 	height: 550px;
 	margin: 0 auto;
 	margin-top: 3%;
+
+}
+
+#listaFicheros {
+		overflow: auto;
 	
+}
+#listaDirectorios {
+		overflow: auto;
 	
+}
+
+#listaPropiedades{
+		overflow: auto;
 }
 
 
