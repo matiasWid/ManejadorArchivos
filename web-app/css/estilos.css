@@ -12,6 +12,19 @@ div.directorioPropiedades {
 	
 }
 
+
+#archivosSeleccionados{
+	width: 100%;
+	border-style: none;
+	height: 80%;
+}
+
+#archivosSeleccionados{
+	width: 100%;
+	border-style: none;
+	height: 80%;
+}
+
 .directorioPropiedades div {
 	border-color: black;
 	width: 33%;

@@ -1,3 +1,5 @@
+<%@page import="org.apache.catalina.connector.Request"%>
+<%@page import="manejadorArchivos.ArchivosController"%>
 <%@ page import="dominio.Archivo"%>
 
 <!doctype html>
@@ -5,10 +7,7 @@
 <head>
 <link rel="stylesheet"
 	href="${resource(dir: 'css', file: 'estilos.css')}" type="text/css">
-<script src="${resource(dir: 'js', file: 'jquery-1.3.2.min.js')}"
-	type="text/javascript"></script>
-<script src="${resource(dir: 'js', file: 'colapsarDirectorios.js')}"
-	type="text/javascript"></script>
+<script src="${resource(dir: 'js', file: 'jquery.js')}"></script>
 <meta charset="utf-8">
 <title>Manejador de archivos</title>
 
@@ -33,32 +32,27 @@
 	</header>
 	<div class="directorioPropiedades">
 		<div id="listaDirectorios">
-			<g:form action="archivo">
-				
-				<table>
-					<thead>
-						<tr>
-							<g:sortableColumn property="path" title="Ruta" colspan="3" />
-						</tr>
-					</thead>
+			<table>
+				<thead>
+					<tr>
+						<g:sortableColumn property="path" title="Ruta" colspan="3" />
+					</tr>
+				</thead>
 				<tbody>
 					<g:each in="${listaDirectorios}" status="i" var="listaInstance">
 						<tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-							<td>
-								<label>
-								
-									<g:link action='archivos' params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
-									${listaInstance.toString()}
+							<td><label> <g:link action='archivos'
+										params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
+										${listaInstance.toString()}
 									</g:link>
-								</label>
-							</td>
+							</label></td>
 						</tr>
 					</g:each>
 				</tbody>
 			</table>
 		</div>
 		<div id="listaFicheros">
-		<table>
+			<table>
 				<thead>
 					<tr>
 						<g:sortableColumn property="path" title="Ruta" colspan="3" />
@@ -67,20 +61,43 @@
 				<tbody>
 					<g:each in="${listaArchivos}" status="i" var="listaInstance">
 						<tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-							<td>
-								<label>
-								<g:checkBox name="${listaInstance.replace(File.separatorChar.toString(), '#')}" value="${false}" />
-									<g:link action='archivos' params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
-									${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}
+							<td><label> <g:checkBox id="check${i}"
+										name="${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}" 
+										value="${false}"
+										onchange="obtenerMarcados()" /> <g:link action='archivos'
+										params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
+										${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}
 									</g:link>
-								</label>
-							</td>
+							</label></td>
 						</tr>
 					</g:each>
 				</tbody>
 			</table>
 		</div>
-		<div id="listaPropiedades"></div>
+		<div id="listaPropiedades">
+			<p>Archivos Seleccionados</p>
+			<div id="archivosSeleccionados">
+				<g:render template="archivos"/>
+			</div>
+		</div>
 	</div>
 </body>
+<script type="text/javascript">
+    function obtenerMarcados(){
+    
+   	var sList =[];
+
+		$('input[type=checkbox]').each(function () {
+			var nombre = $(this.name);
+			if (this.checked){
+		    	sList.push(nombre.selector);
+	    	};
+		});
+		console.log (sList);
+    	        
+		${remoteFunction(controller: 'archivos', action:'listaPropiedades',
+			params:'\'lista=\' + sList',
+			update:[success:'archivosSeleccionados', failure:'archivosSeleccionados'])}
+    };
+</script>
 </html>

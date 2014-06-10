@@ -26,7 +26,11 @@
 		<link>
 			<name>.link_to_grails_plugins</name>
 			<type>2</type>
+<<<<<<< HEAD
 			<location>C:/Users/UCDI/git/ManejadorArchivos/target/work/plugins</location>
+=======
+			<location>C:/Users/UCDI/Matias/ManejadorArchivos/target/work/plugins</location>
+>>>>>>> 1c8e1147d11c4f2ba8d972c6da3a87eb3a9c11ac
 		</link>
 	</linkedResources>
 </projectDescription>
