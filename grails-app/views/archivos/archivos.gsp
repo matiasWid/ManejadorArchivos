@@ -80,13 +80,9 @@
 <script type="text/javascript">
     function obtenerMarcados(){
     
-   	var sList = [];
+   	var sList = '{"city":"Denver", state:"CO", country:"US"}';
 
-		$('input[type=checkbox]').each(function () {
-			var nombre = $(this.name);
-		    sList.push("[nombre:" + nombre.selector + " chequeado:" + this.checked + "]");
-
-		});
+		
 		console.log (sList);
     	        ${remoteFunction(controller: 'archivos', action:'listaPropiedades',
 				params:'\'lista=\' + sList',

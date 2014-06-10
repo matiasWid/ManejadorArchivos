@@ -42,13 +42,16 @@ class ArchivosController {
 	
 
 	def listaPropiedades= {
-		/*def otraLista = []
+		def otraLista =params.id?.toUpperCase() ?: "NO IATA"
+		println otraLista 
+		
+		/*
 		def lista = params.lista
 		def listaCheckBox = ['nombre', 'chequeado'] as grails.converters.JSON
 		otraLista = [lista:listaCheckBox]
 		println otraLista
 		render lista*/
-		render params.lista() as JSON
+		render params.lista as JSON
 		
 			
 		  
