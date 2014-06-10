@@ -13,14 +13,24 @@
 			</label>
 		<%}%>	
 </g:each>
-<p>Etiquetas</p>
+
+<%if (nombres){%>
+
+<g:form>
+	<p>Etiquetas</p>
+
 		<g:each in="${tags}" status = "a" var="tagsIterator">
 			<label>
-				${tagsIterator.palabraClave.toString()}
+				${tagsIterator.palabraClave.toString()} 
+				<g:textField name="id" 
+				hidden = "true" value="${tagsIterator.id}"/>
+				<span class="button" onclick= "${remoteFunction(controller: 'archivos', action:'listaPropiedades',
+			update:[success:'archivosSeleccionados', failure:'archivosSeleccionados'])}"><g:actionSubmit class="edit" controller="archivos" 
+					action="removerTag" value="X"/></span>
+
 			</label>
 		</g:each>
-<%if (nombres){%>
-<g:form>
+
         <%if (nombres.size() == 1){%>
 	        <g:textField 
 	        name= "nombreArchivo"
