@@ -16,21 +16,22 @@
 
 <%if (nombres){%>
 
-<g:form>
+<g:formRemote name="tagsFrm" on404="alert('not found!')" update="listaPropiedades"
+              url="[controller: 'archivos', action:'removerTag']">
 	<p>Etiquetas</p>
-
+        <div id="etiquetas">
 		<g:each in="${tags}" status = "a" var="tagsIterator">
 			<label>
 				${tagsIterator.palabraClave.toString()} 
 				<g:textField name="id" 
 				hidden = "true" value="${tagsIterator.id}"/>
-				<span class="button" onclick= "${remoteFunction(controller: 'archivos', action:'listaPropiedades',
-			update:[success:'archivosSeleccionados', failure:'archivosSeleccionados'])}"><g:actionSubmit class="edit" controller="archivos" 
-					action="removerTag" value="X"/></span>
+				<span class="button"><g:actionSubmit class="edit" value="X"/></span>
 
 			</label>
 		</g:each>
-
+        </div>
+</g:formRemote>
+<g:form>
         <%if (nombres.size() == 1){%>
 	        <g:textField 
 	        name= "nombreArchivo"
@@ -41,7 +42,10 @@
 	    <%}%>
         <g:textField name="etiquetas"
         placeholder = "Etiquetas"/>
-        <span class="button"><g:actionSubmit class="edit" controller="archivos" action="editarAtributos" value="Editar" /></span>
-        <span class="button"><g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" /></span>
+        <span class="button"><g:actionSubmit 
+            class="edit" controller="archivos" action="editarAtributos" 
+            value="Editar"/></span>
 </g:form>
 <%}%>
+
+

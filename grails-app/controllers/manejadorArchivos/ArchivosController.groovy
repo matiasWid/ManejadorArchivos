@@ -56,7 +56,7 @@ class ArchivosController {
 	}
 
     def listaPropiedades= {
-            if (params.lista)
+            if (params.lista){
             nombreArchivos = params.lista
             nombres= []
             tags = []
@@ -102,7 +102,9 @@ class ArchivosController {
 
                     println "FIN..."
                     listaArchivos= nombres
-             render (template:'listaPropiedades', model:[nombres:nombres, tags:tags])
+                    render (template:'listaPropiedades', model:[nombres:nombres, tags:tags])
+            }
+             render (template:'listaPropiedades', model:[nombres:null, tags:null])
     }
     
     def list = {
@@ -132,7 +134,7 @@ class ArchivosController {
             redirect( action:list)
     }
 
-    def removerTag = {
+    def removerTag= {
 	    listaArchivos.each{ archivoIt->
 	        println rutaActual
 	        if(rutaActual != null){
@@ -143,11 +145,22 @@ class ArchivosController {
 	                if(tag!=null){
 	                    tag.removeFromArchivos(archivo)
 	                    archivo.removeFromPalabrasClave(tag)
+                            tags.remove(tags.indexOf(tag))
+                            println "Ahora las tags son: " + tags
                     }
                 }
             }
         }
-        redirect(action:listaPropiedades)
+        /*def tagsAux = []
+        println "acaaaaaa"
+        println tags
+        tags.each{tag->
+            
+            if(tag.id != params.id)
+            tagsAux(tag)
+        }
+        tags=tagsAux*/
+        render (template:'listaPropiedades', model:[nombres:nombres, tags:tags])
     }
   
     
