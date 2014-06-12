@@ -135,17 +135,20 @@ class ArchivosController {
     }
 
     def removerTag= {
+        
 	    listaArchivos.each{ archivoIt->
 	        println rutaActual
 	        if(rutaActual != null){
 	            def archivo = dominio.Archivo.findByRuta(rutaActual + File.separatorChar.toString() + archivoIt)
 	            if(archivo){
-	                
+	                println "Id tag: " + params.id
 	                def tag = dominio.PalabraClave.get(params.id)
+                        println "Tag: " + tag.id
 	                if(tag!=null){
 	                    tag.removeFromArchivos(archivo)
 	                    archivo.removeFromPalabrasClave(tag)
-                            tags.remove(tags.indexOf(tag))
+                            println "Indice en lista: " + tags.findIndexOf{it.id == tag.id}
+                            tags.remove(tags.findIndexOf{it.id == tag.id})
                             println "Ahora las tags son: " + tags
                     }
                 }
@@ -182,21 +185,41 @@ class ArchivosController {
                     archivo = new dominio.Archivo(ruta:rutaActual + File.separatorChar.toString() + archivoIt, nombre:archivoIt)
                     archivo.save()
                 }
-
+                  
                 def listaPalabras = obtenerPalabrasClave(params.etiquetas)
                 listaPalabras.each{palabra->
+                      
                     def tag = dominio.PalabraClave.findByPalabraClave(palabra)
                     if(tag==null){
                         tag = new dominio.PalabraClave(palabraClave:palabra)
                         tag.save()
                     }
-                    tag.addToArchivos(archivo)
-                    tag.save()
-                    archivo.addToPalabrasClave(tag)
-                    archivo.save()
+                    
+                        if(!tag.archivos.exist(archivo)){
+                            tag.addToArchivos(archivo)
+                            tag.save()
+                        }else{
+                        tag.addToArchivos(archivo)
+                        tag.save()
+                    }
+                    
+                    if(tag !=null){
+                        if(!archivo.palabrasClave.exist(tag)){
+                            archivo.addToPalabrasClave(tag)
+                            archivo.save()
+                        }
+                    }else{
+                        archivo.addToPalabrasClave(tag)
+                        archivo.save()
+                    }
+                    
+                   if((tags.findIndexOf{it.id == tag.id}) == -1){
+                        tags.add(tag)
+                    }
                 }
             }
         }
+        render (template:'listaPropiedades', model:[nombres:nombres, tags:tags])
     }
 
     def obtenerPalabrasClave(String palabras) {
