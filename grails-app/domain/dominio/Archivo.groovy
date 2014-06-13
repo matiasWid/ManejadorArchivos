@@ -26,6 +26,7 @@ class Archivo {
         archivosRelacionados:Archivo,
         tiposoporte: dominio.TipoSoporte]
 
+    
     static constraints = {
         ruta unique: true
         //estas constraints son para pobar

@@ -187,36 +187,24 @@ class ArchivosController {
                 }
                   
                 def listaPalabras = obtenerPalabrasClave(params.etiquetas)
+                println "Lista obtenida" + listaPalabras
                 listaPalabras.each{palabra->
                       
                     def tag = dominio.PalabraClave.findByPalabraClave(palabra)
                     if(tag==null){
                         tag = new dominio.PalabraClave(palabraClave:palabra)
                         tag.save()
-                    }
+                    }   
+                    println "Intentando meter la palabra" + tag
+                    tag.addToArchivos(archivo).save()
+                    archivo.addToPalabrasClave(tag).save()
                     
-                        if(!tag.archivos.exist(archivo)){
-                            tag.addToArchivos(archivo)
-                            tag.save()
-                        }else{
-                        tag.addToArchivos(archivo)
-                        tag.save()
-                    }
                     
-                    if(tag !=null){
-                        if(!archivo.palabrasClave.exist(tag)){
-                            archivo.addToPalabrasClave(tag)
-                            archivo.save()
-                        }
-                    }else{
-                        archivo.addToPalabrasClave(tag)
-                        archivo.save()
-                    }
-                    
-                   if((tags.findIndexOf{it.id == tag.id}) == -1){
+                    if((tags.findIndexOf{it.id == tag.id}) == -1){
                         tags.add(tag)
                     }
                 }
+                
             }
         }
         render (template:'listaPropiedades', model:[nombres:nombres, tags:tags])

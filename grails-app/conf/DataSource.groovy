@@ -1,15 +1,15 @@
 dataSource {
-    //    pooled = true
-    //    jmxExport = true
-    //    driverClassName = "org.h2.Driver"
-    //    username = "sa"
-    //    password = ""
-    pooled = true
-    dbCreate = "update"
-    url = "jdbc:mysql://localhost/manejoarchivos"
-    driverClassName = "com.mysql.jdbc.Driver"
-    username = "root"
-    password = "07504187"
+        pooled = true
+        jmxExport = true
+        driverClassName = "org.h2.Driver"
+        username = "root"
+        password = "07504187"
+//    pooled = true
+//    dbCreate = "update"
+//    url = "jdbc:mysql://localhost/manejoarchivos"
+//    driverClassName = "com.mysql.jdbc.Driver"
+//    username = "root"
+//    password = "07504187"
 }
 hibernate {
     cache.use_second_level_cache = true
@@ -24,8 +24,10 @@ environments {
     development {
         dataSource {
             dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
-            url = "jdbc:mysql://localhost/manejoarchivos"
-           // url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
+           // url = "jdbc:mysql://localhost/manejoarchivos"
+            url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
+            grails.dbconsole.enabled = true
+            grails.dbconsole.urlRoot = '/admin/dbconsole'
         }
     }
     test {
