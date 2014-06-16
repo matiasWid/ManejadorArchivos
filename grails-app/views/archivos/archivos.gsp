@@ -30,6 +30,29 @@
             </div>
 
         </header>
+        <div id="divSubir">
+            <h1>Subir archivo:</h1><br>
+
+			 <g:form method="post"  enctype="multipart/form-data">
+	                <div class="dialog">
+	                    <table>
+	                        <tbody>
+	                            <tr class="prop">
+	                                <td valign="top" class="name">
+	                                    <label for="fileUpload">Subir:</label>
+	                                </td>
+	                                <td valign="top" class="value ${hasErrors(bean:fileResourceInstance,field:'upload','errors')}">
+	                                    <input type="file" id="fileUpload" name="fileUpload" />
+	                                </td>
+	                            </tr> 
+	                        </tbody>
+	                    </table>
+	                </div>
+	                <div class="buttons">
+	                    <span class="button"><g:actionSubmit class="upload" value="Subir" action="upload" /></span>
+	                </div>
+	            </g:form>
+        </div>
         <div class="directorioPropiedades">
             <div id="listaDirectorios">
                 <table>

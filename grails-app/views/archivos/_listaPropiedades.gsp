@@ -1,3 +1,6 @@
+<g:if test="${flash.message}">
+   ${flash.message}
+</g:if>
 <g:each in="${nombres}" status="i" var="nombresInstance">
 		<%if(nombres.size() == 1){%>
 			<label>
@@ -38,7 +41,7 @@
 	        id="nombreArchivo" 
 	        type= "text" 
 	        placeholder= "Nombre del archivo"
-	        value = "${nombres[0].toString()}"/>
+	        value = "${nombres[0].toString().substring(0,nombres[0].toString().lastIndexOf('.'))}"/>
 	    <%}%>
         <g:textField name="etiquetas"
         placeholder = "Etiquetas"/>

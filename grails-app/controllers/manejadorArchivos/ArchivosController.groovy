@@ -1,7 +1,8 @@
 package manejadorArchivos
-
+import java.nio.file.*
+import java.io.IOException
 import grails.converters.JSON
-import groovy.io.FileType;
+import groovy.io.FileType
 
 class ArchivosController {
     def allowedMethods = []
@@ -123,8 +124,8 @@ class ArchivosController {
             def f = request.getFile('fileUpload')
             if(!f.empty) {
 
-                    new File( grailsApplication.config.images.location.toString() ).mkdirs()
-                    f.transferTo( new File( grailsApplication.config.images.location.toString() + File.separatorChar + f.getOriginalFilename() ) )
+                    new File( rutaActual ).mkdirs()
+                    f.transferTo( new File( rutaActual + File.separatorChar + f.getOriginalFilename() ) )
                     flash.message = 'Your file has been uploaded'
 
             }
@@ -148,7 +149,9 @@ class ArchivosController {
 	                    tag.removeFromArchivos(archivo)
 	                    archivo.removeFromPalabrasClave(tag)
                             println "Indice en lista: " + tags.findIndexOf{it.id == tag.id}
+                        if(tags.findIndexOf{it.id == tag.id}>-1){
                             tags.remove(tags.findIndexOf{it.id == tag.id})
+                        }
                             println "Ahora las tags son: " + tags
                     }
                 }
@@ -176,37 +179,67 @@ class ArchivosController {
     }
     
     def editarAtributos = {
-
+    flash.message = ''
         listaArchivos.each{ archivoIt->
             println rutaActual
+            println "El archivo se llama: " + archivoIt
             if(rutaActual != null){
                 def archivo = dominio.Archivo.findByRuta(rutaActual + File.separatorChar.toString() + archivoIt)
                 if(!archivo){
                     archivo = new dominio.Archivo(ruta:rutaActual + File.separatorChar.toString() + archivoIt, nombre:archivoIt)
                     archivo.save()
                 }
-                  
-                def listaPalabras = obtenerPalabrasClave(params.etiquetas)
-                println "Lista obtenida" + listaPalabras
-                listaPalabras.each{palabra->
-                      
-                    def tag = dominio.PalabraClave.findByPalabraClave(palabra)
-                    if(tag==null){
-                        tag = new dominio.PalabraClave(palabraClave:palabra)
-                        tag.save()
-                    }   
-                    println "Intentando meter la palabra" + tag
-                    tag.addToArchivos(archivo).save()
-                    archivo.addToPalabrasClave(tag).save()
-                    
-                    
-                    if((tags.findIndexOf{it.id == tag.id}) == -1){
-                        tags.add(tag)
+
+                if(params.nombreArchivo != archivoIt.substring(0,archivoIt.lastIndexOf('.'))){
+                    try {
+                        //   Files.move(Path, Path, CopyOption)
+                        def file1 = new File(rutaActual + File.separatorChar.toString() + archivoIt)
+                        def file2 = new File(rutaActual + File.separatorChar.toString() + 
+                                            params.nombreArchivo + archivoIt.substring(archivoIt.lastIndexOf('.')))
+                        if(!file2.exists()){
+                            file1.renameTo(file2)
+                            archivoIt = params.nombreArchivo + archivoIt.substring(archivoIt.lastIndexOf('.'))
+                        }else{
+                            flash.message = 'No se pudo cambiar el nombre, ya existe un archivo con ese nombre'
+                        }
+                    } catch (Exception e) {
+                        println(e)
+                    }
+                }
+                println "Ahora el archivo se llama: " + archivoIt  
+                
+
+                println "Etiquetas parametro: " + params.etiquetas
+                  if(params.etiquetas != ""){
+                    def listaPalabras = obtenerPalabrasClave(params.etiquetas)
+                    println "Lista obtenida" + listaPalabras
+                    listaPalabras.each{palabra->
+                        
+                        def tag = dominio.PalabraClave.findByPalabraClave(palabra)
+                        if(tag==null){
+                            tag = new dominio.PalabraClave(palabraClave:palabra)
+                            tag.save()
+                        }   
+                        println "Intentando meter la palabra: " + tag
+                       try { 
+                            tag.addToArchivos(archivo)
+        					tag.save(flush: true)
+                     
+                            archivo.addToPalabrasClave(tag)
+                    		archivo.save(flush: true)
+                        }
+        					 catch (Exception e) {
+                                println "ocurrio la exepcion"
+                        }
+                        if((tags.findIndexOf{it.id == tag.id}) == -1){
+                            tags.add(tag)
+                        }
                     }
                 }
                 
             }
         }
+       // flash.message = 'Los cambios se han aplicado correctamente'
         render (template:'listaPropiedades', model:[nombres:nombres, tags:tags])
     }
 
