@@ -10,27 +10,27 @@
      </div>
         <div class="body">
 
-			<h1>Subir archivo:</h1><br>
+            <h1>Subir archivo:</h1><br>
 
-			 <g:form method="post"  enctype="multipart/form-data">
-	                <div class="dialog">
-	                    <table>
-	                        <tbody>
-	                            <tr class="prop">
-	                                <td valign="top" class="name">
-	                                    <label for="fileUpload">Subir:</label>
-	                                </td>
-	                                <td valign="top" class="value ${hasErrors(bean:fileResourceInstance,field:'upload','errors')}">
-	                                    <input type="file" id="fileUpload" name="fileUpload" />
-	                                </td>
-	                            </tr> 
-	                        </tbody>
-	                    </table>
-	                </div>
-	                <div class="buttons">
-	                    <span class="button"><g:actionSubmit class="upload" value="Subir" action="upload" /></span>
-	                </div>
-	            </g:form>
+            <g:form method="post"  enctype="multipart/form-data">
+                <div class="dialog">
+                    <table>
+                        <tbody>
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                    <label for="fileUpload">Subir:</label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean:fileResourceInstance,field:'upload','errors')}">
+                                    <input type="file" id="fileUpload" name="fileUpload" />
+                                </td>
+                            </tr> 
+                        </tbody>
+                    </table>
+                </div>
+                <div class="buttons">
+                    <span class="button"><g:actionSubmit class="upload" value="Subir" action="upload" /></span>
+                </div>
+            </g:form>
 
             <h1>Lista de archivos</h1>
             <g:if test="${flash.message}">

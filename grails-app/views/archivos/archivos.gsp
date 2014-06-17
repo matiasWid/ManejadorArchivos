@@ -85,7 +85,7 @@
                         <g:each in="${listaArchivos}" status="i" var="listaInstance">
                             <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
                                 <td><label> <g:checkBox id="check${i}"
-                                        name="${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}" 
+                                        name='${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}' 
                                         value="${false}"
                                             onchange="obtenerMarcados()" /> <g:link action='archivos'
                                             params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
@@ -111,11 +111,13 @@
 
         var sList =[];
 
-        $('input[type=checkbox]').each(function () {
-        var nombre = $(this.name);
-        if (this.checked){
+        $("input:checked").each(function () {
+        console.log ($(this.name));
+        
+        var nombre =  $(this.name);
+        
         sList.push(nombre.selector);
-        };
+        
         });
         console.log (sList);
 

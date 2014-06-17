@@ -190,7 +190,7 @@ class ArchivosController {
                     archivo.save()
                 }
 
-                if(params.nombreArchivo != archivoIt.substring(0,archivoIt.lastIndexOf('.'))){
+                if(listaArchivos.size() == 1 && params.nombreArchivo != archivoIt.substring(0,archivoIt.lastIndexOf('.'))){
                     try {
                         //   Files.move(Path, Path, CopyOption)
                         def file1 = new File(rutaActual + File.separatorChar.toString() + archivoIt)
