@@ -249,21 +249,24 @@ class ArchivosController {
         println "Comiezo de phraser para separar rutas..."
         println "las rutas son: " + rutaAct
         def listaRutas = []
-        for(int i=0;i<rutaAct.size();i++){
-                if (rutaAct[i] == File.separatorChar.toString()){
-                   println "posicion " + i
-                   listaRutas.add(rutaAct.substring(0,i).trim())
-                   println "Ruta " + rutaAct.substring(0,i).trim()
-                   rutaAct = rutaAct.substring(rutaAct.substring(0,i).size()+1).trim()
-                   i= 0
-                }
-             }
-             listaRutas.add(rutaAct.trim())
-             println "nombre archivo " + rutaAct
-             listaRutas.each{nombre->
-                println "lista nombres " + nombre
-             }
-       }
+        if(rutaAct.length()>=grailsApplication.config.images.location.toString().length()){
+            rutaAct=rutaAct.substring(grailsApplication.config.images.location.toString().length())
+            for(int i=0;i<rutaAct.size();i++){
+                    if (rutaAct[i] == File.separatorChar.toString()){
+                       println "posicion " + i
+                       listaRutas.add(rutaAct.substring(0,i).trim())
+                       println "Ruta " + rutaAct.substring(0,i).trim()
+                       rutaAct = rutaAct.substring(rutaAct.substring(0,i).size()+1).trim()
+                       i= 0
+                    }
+                 }
+                 listaRutas.add(rutaAct.trim())
+                 println "nombre archivo " + rutaAct
+                 listaRutas.each{nombre->
+                    println "lista nombres " + nombre
+                 }
+        }
+        }
     
     def obtenerPalabrasClave(String palabras) {
         println "Comiezo de phraser para separar palabras clave..."

@@ -1,7 +1,13 @@
 <%@page import="org.apache.catalina.connector.Request"%>
 <%@page import="manejadorArchivos.ArchivosController"%>
 <%@ page import="dominio.Archivo"%>
+<%@page expressionCodec="raw" %>
+<%
 
+def downloads = grailsApplication.config.images.location.toString()
+def path1 = new File("${downloads}/myFirstUploadr")
+
+%>
 <!doctype html>
 <html lang="es">
     <head>
@@ -10,7 +16,8 @@
         <script src="${resource(dir: 'js', file: 'jquery.js')}"></script>
         <meta charset="utf-8">
         <title>Manejador de archivos</title>
-
+        <r:require modules="uploadr"/>
+        <r:layoutResources/>
     </head>
     <body>
         <header>
@@ -32,63 +39,72 @@
         </header>
         <div id="divSubir">
             <h1>Subir archivo:</h1><br>
-
-			 <g:form method="post"  enctype="multipart/form-data">
-	                <div class="dialog">
-	                    <table>
-	                        <tbody>
-	                            <tr class="prop">
-	                                <td valign="top" class="name">
-	                                    <label for="fileUpload">Subir:</label>
-	                                </td>
-	                                <td valign="top" class="value ${hasErrors(bean:fileResourceInstance,field:'upload','errors')}">
-	                                    <input type="file" id="fileUpload" name="fileUpload" />
-	                                </td>
-	                            </tr> 
-	                        </tbody>
-	                    </table>
-	                </div>
-	                <div class="buttons">
-	                    <span class="button"><g:actionSubmit class="upload" value="Subir" action="upload" /></span>
-	                </div>
-	            </g:form>
+            <uploadr:add name="myUploadrName" path="/my/upload/path" direction="up" maxVisible="8" unsupported="/my/controller/action" rating="true" voting="true" colorPicker="true" maxSize="204800" />
+            <g:form method="post"  enctype="multipart/form-data">
+                <div class="dialog">
+                    <label for="fileUpload">Subir:</label>
+                    <input type="file" id="fileUpload" name="fileUpload" />
+                </div>
+                <div class="buttons">
+                    <span class="button"><g:actionSubmit class="upload" value="Subir" action="upload" /></span>
+                </div>
+           </g:form>
+        </div>
+        <div id="directorioActual">
+            <span class="directorio">
+                <g:link action='archivos'>
+                    Inicio
+                </g:link>
+            </span> 
+            <span class="separador">
+                /
+            </span>
+            <g:set var="dir"/>
+                <g:each in="${listaDirRecorridos}" status="i" var="listaInstance">
+                    <span class="directorio">
+                        <%
+                            if(dir!=null){
+                                dir=dir+File.separatorChar.toString()+listaInstance
+                            }else{
+                                dir=listaInstance
+                            }                        
+                        %>
+                        <g:link action='archivos'
+                                params='[ruta : "${dir.replace(File.separatorChar.toString(), '#')}"]'>
+                                ${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}
+                        </g:link>
+                    </span>
+                    <span class="separador">
+                        /
+                    </span>
+                </g:each>
         </div>
         <div class="directorioPropiedades">
-            <div id="directorioActual">
-                <table>
-                    <tbody>
-                        <g:each in="${listaDirRecorridos}" status="i" var="listaInstance">
-                            <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-                                <td>
-                                    <label> 
-                                        <g:link action='archivos'
-                                            params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
-                                            ${listaInstance.toString()}
-                                        </g:link>
-                                    </label>
-                                </td>
-                            </tr>
-                        </g:each>
-                    </tbody>
-                </table>
-            </div>
             <div id="listaDirectorios">
                 <table>
                     <thead>
                         <tr>
-                            <g:sortableColumn property="path" title="Ruta"/>
+                            <th class="sortable">Ruta</th>
+                            <th class="sortable">Etiquetas</th>
+                            <th class="sortable">Fecha de creación</th>
+                            <!--<g:sortableColumn property="path" title="Ruta"/>
                             <g:sortableColumn property="path" title="Etiquetas"/>
-                            <g:sortableColumn property="path" title="Fecha de creacion"/>
+                            <g:sortableColumn property="path" title="Fecha de creacion"/>-->
                         </tr>
                     </thead>
                     <tbody>
                         <g:each in="${listaDirectorios}" status="i" var="listaInstance">
                             <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-                                <td><label> <g:link action='archivos'
-                                            params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
+                                <td>
+                                    <label> 
+                                        <g:link action='archivos'
+                                                        params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
+                                             <img src="../images/skin/folder-icon.png">
+                                            </img>           
                                             ${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}
                                         </g:link>
-                                    </label></td>
+                                    </label>
+                                </td>
                             </tr>
                         </g:each>
                         <g:each in="${listaArchivos}" status="i" var="listaInstance">
@@ -143,8 +159,9 @@
         console.log (sList);
 
         ${remoteFunction(controller: 'archivos', action:'listaPropiedades',
-params:'\'lista=\' + sList',
-update:[success:'archivosSeleccionados', failure:'archivosSeleccionados'])}
+                        params:'\'lista=\' + sList',
+                        update:[success:'archivosSeleccionados', failure:'archivosSeleccionados'])}
         };
+        
     </script>
 </html>
