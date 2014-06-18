@@ -17,44 +17,46 @@ class ArchivosController {
     def index = { redirect(action:archivos) }
 	
     def archivos= {
-		def listaDirectorios = []
-		def listaArchivos = []
-		//primero obtengo los directorios
-		if(!params.ruta){
-			def f = new File(grailsApplication.config.images.location.toString())
-			f.eachDir{
-				dir ->listaDirectorios.add(dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
-			}
-			rutaActual = f.getPath()
-		}else{
-			String ruta = params.ruta
-			def f = new File(grailsApplication.config.images.location.toString() + File.separatorChar
-				 + params.ruta.replace('#',File.separatorChar.toString()))
-			f.eachDir { 
-				dir ->listaDirectorios.add(params.ruta.replace('#',File.separatorChar.toString()) + File.separatorChar + dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
-				}
-			rutaActual = f.getPath()
-		}
-		//obtengo la lista de archivos
-		if(!params.ruta){
-			new File (grailsApplication.config.images.location.toString()).eachFile(FileType.FILES) {
-				
-				dir ->listaArchivos.add(dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
-			}
-		}else{
-			String ruta = params.ruta
-			def f = new File(grailsApplication.config.images.location.toString() + File.separatorChar
-				 + params.ruta.replace('#',File.separatorChar.toString()))
-			f.eachFile(FileType.FILES){
-				dir ->listaArchivos.add(params.ruta.replace('#',File.separatorChar.toString()) + File.separatorChar + dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
-				}
+            def listaDirectorios = []
+            def listaArchivos = []
+            //primero obtengo los directorios
+            if(!params.ruta){
+                    def f = new File(grailsApplication.config.images.location.toString())
+                    f.eachDir{
+                            dir ->listaDirectorios.add(dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
+                    }
+                    rutaActual = f.getPath()
+            }else{
+                    String ruta = params.ruta
+                    def f = new File(grailsApplication.config.images.location.toString() + File.separatorChar
+                             + params.ruta.replace('#',File.separatorChar.toString()))
+                    f.eachDir { 
+                            dir ->listaDirectorios.add(params.ruta.replace('#',File.separatorChar.toString()) + File.separatorChar + dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
+                            }
+                    rutaActual = f.getPath()
+            }
+            //obtengo la lista de archivos
+            if(!params.ruta){
+                    new File (grailsApplication.config.images.location.toString()).eachFile(FileType.FILES) {
 
-		}
-				println listaArchivos
-				
-				 println rutaActual
-		return [ listaDirectorios: listaDirectorios, listaArchivos:listaArchivos]
-	}
+                            dir ->listaArchivos.add(dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
+                    }
+            }else{
+                    String ruta = params.ruta
+                    def f = new File(grailsApplication.config.images.location.toString() + File.separatorChar
+                             + params.ruta.replace('#',File.separatorChar.toString()))
+                    f.eachFile(FileType.FILES){
+                            dir ->listaArchivos.add(params.ruta.replace('#',File.separatorChar.toString()) + File.separatorChar + dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
+                            }
+
+            }
+            println listaArchivos
+
+            println rutaActual
+
+        def listaDirRecorridos = obtenerDirectoriosRecorridos(rutaActual)
+        return [ listaDirectorios: listaDirectorios, listaArchivos:listaArchivos, listaDirRecorridos:listaDirRecorridos ]
+}
 
     def listaPropiedades= {
             if (params.lista){
@@ -243,6 +245,26 @@ class ArchivosController {
         render (template:'listaPropiedades', model:[nombres:nombres, tags:tags])
     }
 
+    def obtenerDirectoriosRecorridos(String rutaAct) {
+        println "Comiezo de phraser para separar rutas..."
+        println "las rutas son: " + rutaAct
+        def listaRutas = []
+        for(int i=0;i<rutaAct.size();i++){
+                if (rutaAct[i] == File.separatorChar.toString()){
+                   println "posicion " + i
+                   listaRutas.add(rutaAct.substring(0,i).trim())
+                   println "Ruta " + rutaAct.substring(0,i).trim()
+                   rutaAct = rutaAct.substring(rutaAct.substring(0,i).size()+1).trim()
+                   i= 0
+                }
+             }
+             listaRutas.add(rutaAct.trim())
+             println "nombre archivo " + rutaAct
+             listaRutas.each{nombre->
+                println "lista nombres " + nombre
+             }
+       }
+    
     def obtenerPalabrasClave(String palabras) {
         println "Comiezo de phraser para separar palabras clave..."
         println "las palabras son: " + palabras

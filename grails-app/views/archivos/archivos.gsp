@@ -54,11 +54,31 @@
 	            </g:form>
         </div>
         <div class="directorioPropiedades">
+            <div id="directorioActual">
+                <table>
+                    <tbody>
+                        <g:each in="${listaDirRecorridos}" status="i" var="listaInstance">
+                            <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+                                <td>
+                                    <label> 
+                                        <g:link action='archivos'
+                                            params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
+                                            ${listaInstance.toString()}
+                                        </g:link>
+                                    </label>
+                                </td>
+                            </tr>
+                        </g:each>
+                    </tbody>
+                </table>
+            </div>
             <div id="listaDirectorios">
                 <table>
                     <thead>
                         <tr>
-                            <g:sortableColumn property="path" title="Ruta" colspan="3" />
+                            <g:sortableColumn property="path" title="Ruta"/>
+                            <g:sortableColumn property="path" title="Etiquetas"/>
+                            <g:sortableColumn property="path" title="Fecha de creacion"/>
                         </tr>
                     </thead>
                     <tbody>
@@ -66,22 +86,11 @@
                             <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
                                 <td><label> <g:link action='archivos'
                                             params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
-                                            ${listaInstance.toString()}
+                                            ${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}
                                         </g:link>
                                     </label></td>
                             </tr>
                         </g:each>
-                    </tbody>
-                </table>
-            </div>
-            <div id="listaFicheros">
-                <table>
-                    <thead>
-                        <tr>
-                            <g:sortableColumn property="path" title="Ruta" colspan="3" />
-                        </tr>
-                    </thead>
-                    <tbody>
                         <g:each in="${listaArchivos}" status="i" var="listaInstance">
                             <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
                                 <td><label> <g:checkBox id="check${i}"
@@ -97,6 +106,18 @@
                     </tbody>
                 </table>
             </div>
+           <!-- <div id="listaFicheros">
+                <table>
+                    <thead>
+                        <tr>
+                            <g:sortableColumn property="path" title="Ruta" colspan="3" />
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+            </div>-->
             <div id="listaPropiedades">
                 <p>Archivos Seleccionados</p>
                 <div id="archivosSeleccionados">
