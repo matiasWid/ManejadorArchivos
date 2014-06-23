@@ -2,12 +2,7 @@
 <%@page import="manejadorArchivos.ArchivosController"%>
 <%@ page import="dominio.Archivo"%>
 <%@page expressionCodec="raw" %>
-<%
 
-def downloads = grailsApplication.config.images.location.toString()
-def path1 = new File("${downloads}/myFirstUploadr")
-
-%>
 <!doctype html>
 <html lang="es">
     <head>
@@ -16,8 +11,6 @@ def path1 = new File("${downloads}/myFirstUploadr")
         <script src="${resource(dir: 'js', file: 'jquery.js')}"></script>
         <meta charset="utf-8">
         <title>Manejador de archivos</title>
-        <r:require modules="uploadr"/>
-        <r:layoutResources/>
     </head>
     <body>
         <header>
@@ -39,14 +32,14 @@ def path1 = new File("${downloads}/myFirstUploadr")
         </header>
         <div id="divSubir">
             <h1>Subir archivo:</h1><br>
-            <uploadr:add name="myUploadrName" path="/my/upload/path" direction="up" maxVisible="8" unsupported="/my/controller/action" rating="true" voting="true" colorPicker="true" maxSize="204800" />
             <g:form method="post"  enctype="multipart/form-data">
                 <div class="dialog">
                     <label for="fileUpload">Subir:</label>
-                    <input type="file" id="fileUpload" name="fileUpload" />
+                    <input type="file" id="filesUpload" name="filesUpload" multiple="multiple"/>
                 </div>
                 <div class="buttons">
                     <span class="button"><g:actionSubmit class="upload" value="Subir" action="upload" /></span>
+                
                 </div>
            </g:form>
         </div>
@@ -59,6 +52,7 @@ def path1 = new File("${downloads}/myFirstUploadr")
             <span class="separador">
                 /
             </span>
+            <!--se muestra la ruta actual y la posibilidad de navegar en las mismas-->
             <g:set var="dir"/>
                 <g:each in="${listaDirRecorridos}" status="i" var="listaInstance">
                     <span class="directorio">
@@ -70,7 +64,7 @@ def path1 = new File("${downloads}/myFirstUploadr")
                             }                        
                         %>
                         <g:link action='archivos'
-                                params='[ruta : "${dir.replace(File.separatorChar.toString(), '#')}"]'>
+                                params='[ruta : "${dir.replace(File.separatorChar.toString(), '|')}"]'>
                                 ${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}
                         </g:link>
                     </span>
@@ -84,21 +78,19 @@ def path1 = new File("${downloads}/myFirstUploadr")
                 <table>
                     <thead>
                         <tr>
-                            <th class="sortable">Ruta</th>
+                            <th class="sortable"><input name="checktodos" type="checkbox" />Ruta</th>
                             <th class="sortable">Etiquetas</th>
                             <th class="sortable">Fecha de creación</th>
-                            <!--<g:sortableColumn property="path" title="Ruta"/>
-                            <g:sortableColumn property="path" title="Etiquetas"/>
-                            <g:sortableColumn property="path" title="Fecha de creacion"/>-->
                         </tr>
                     </thead>
                     <tbody>
+                        <!--se listan los directorios-->
                         <g:each in="${listaDirectorios}" status="i" var="listaInstance">
                             <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
                                 <td>
                                     <label> 
                                         <g:link action='archivos'
-                                                        params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
+                                                        params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '|')}"]'>
                                              <img src="../images/skin/folder-icon.png">
                                             </img>           
                                             ${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}
@@ -106,7 +98,7 @@ def path1 = new File("${downloads}/myFirstUploadr")
                                     </label>
                                 </td>
                             </tr>
-                        </g:each>
+                        </g:each><!--
                         <g:each in="${listaArchivos}" status="i" var="listaInstance">
                             <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
                                 <td><label> <g:checkBox id="check${i}"
@@ -118,22 +110,35 @@ def path1 = new File("${downloads}/myFirstUploadr")
                                         </g:link>
                                     </label></td>
                             </tr>
-                        </g:each>
+                        </g:each>-->
+                        <!--se listan los archivos en el directorio-->
+                        <g:formRemote name="archivosFrm" on404="alert('not found!')" update="archivosSeleccionados"
+                            url="[controller: 'archivos', action:'listaPropiedades']">
+                            <g:each in="${listaArchivos}" status="i" var="listaInstance">
+                                <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+                                    <td>
+                                        <label> 
+                                            <%
+                                            def nombre = listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)
+                                            
+                                            %>
+                                            <g:checkBox id="${i}"
+                                            value="${nombre}"
+                                            name='check.${i}'
+                                            onchange="hacerClic()"
+                                            checked="${false}"/> 
+                                            <g:link action='archivos'
+                                                params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
+                                                ${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}
+                                            </g:link>
+                                        </label></td>
+                                </tr>
+                            </g:each>
+                            <g:actionSubmit id="botonSubmit" class="edit" value="x" hidden="true"/>
+                            </g:formRemote>
                     </tbody>
                 </table>
             </div>
-           <!-- <div id="listaFicheros">
-                <table>
-                    <thead>
-                        <tr>
-                            <g:sortableColumn property="path" title="Ruta" colspan="3" />
-                        </tr>
-                    </thead>
-                    <tbody>
-                        
-                    </tbody>
-                </table>
-            </div>-->
             <div id="listaPropiedades">
                 <p>Archivos Seleccionados</p>
                 <div id="archivosSeleccionados">
@@ -143,20 +148,44 @@ def path1 = new File("${downloads}/myFirstUploadr")
         </div>
     </body>
     <script type="text/javascript">
+        
+        $(document).ready(function(){
+ 
+	//Checkbox
+	$("input[name=checktodos]").change(function(){
+		$('input[type=checkbox]').each( function() {			
+			if($("input[name=checktodos]:checked").length == 1){
+				this.checked = true;
+			} else {
+				this.checked = false;
+			}
+		});
+                hacerClic();
+	});
+ 
+        });
+        
+        function hacerClic(){
+        $("#botonSubmit").click();
+        }
         onComplete:obtenerMarcados();
+        function llamarAjax(){
+        
+            jQuery.ajax({type:'POST',data:jQuery(this).serialize(), url:'/ManejadorArchivos/archivos/listaPropiedades',success:function(data,textStatus){jQuery('#archivosSeleccionados').html(data);},error:function(XMLHttpRequest,textStatus,errorThrown){}});return false
+        };
         function obtenerMarcados(){
 
-        var sList =[];
+            var sList =[];
 
-        $("input:checked").each(function () {
-        console.log ($(this.name));
-        
-        var nombre =  $(this.name);
-        
-        sList.push(nombre.selector);
-        
-        });
-        console.log (sList);
+            $("input:checked").each(function () {
+            console.log ($(this.name));
+
+            var nombre =  $(this.name);
+
+            sList.push(nombre.selector);
+
+            });
+            console.log (sList);
 
         ${remoteFunction(controller: 'archivos', action:'listaPropiedades',
                         params:'\'lista=\' + sList',

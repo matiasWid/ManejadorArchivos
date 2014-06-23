@@ -7,8 +7,8 @@ import groovy.io.FileType
 class ArchivosController {
     def allowedMethods = []
     String rutaActual
-    def listaArchivos
-    def nombreArchivos
+    def listaArchivos=[]
+    def nombreArchivos =[]
     static transactional = true
     def nombres = []
     def tags = []
@@ -18,7 +18,7 @@ class ArchivosController {
 	
     def archivos= {
             def listaDirectorios = []
-            def listaArchivos = []
+            listaArchivos = []
             //primero obtengo los directorios
             if(!params.ruta){
                     def f = new File(grailsApplication.config.images.location.toString())
@@ -29,9 +29,9 @@ class ArchivosController {
             }else{
                     String ruta = params.ruta
                     def f = new File(grailsApplication.config.images.location.toString() + File.separatorChar
-                             + params.ruta.replace('#',File.separatorChar.toString()))
+                             + params.ruta.replace('|',File.separatorChar.toString()))
                     f.eachDir { 
-                            dir ->listaDirectorios.add(params.ruta.replace('#',File.separatorChar.toString()) + File.separatorChar + dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
+                            dir ->listaDirectorios.add(params.ruta.replace('|',File.separatorChar.toString()) + File.separatorChar + dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
                             }
                     rutaActual = f.getPath()
             }
@@ -44,9 +44,9 @@ class ArchivosController {
             }else{
                     String ruta = params.ruta
                     def f = new File(grailsApplication.config.images.location.toString() + File.separatorChar
-                             + params.ruta.replace('#',File.separatorChar.toString()))
+                             + params.ruta.replace('|',File.separatorChar.toString()))
                     f.eachFile(FileType.FILES){
-                            dir ->listaArchivos.add(params.ruta.replace('#',File.separatorChar.toString()) + File.separatorChar + dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
+                            dir ->listaArchivos.add(params.ruta.replace('|',File.separatorChar.toString()) + File.separatorChar + dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
                             }
 
             }
@@ -59,14 +59,25 @@ class ArchivosController {
 }
 
     def listaPropiedades= {
-            if (params.lista){
-            nombreArchivos = params.lista
-            nombres= []
+        nombreArchivos=[]
+        params.check.each
+        {
+            nombre->
+            if(nombre.value){
+                
+                println "Agregando a la lista de nombres: " + nombre.value
+                nombreArchivos.add(nombre.value)
+            }
+        }
+        
+            if (nombreArchivos){
+            //nombreArchivos = params.lista
             tags = []
             //phraser para obtener una lista con los nombres de archivos
             //separados por una coma para manjearlos mas comodo en la view
             println nombreArchivos
-            for(int i=0;i<nombreArchivos.size();i++)
+            
+           /* for(int i=0;i<nombreArchivos.size();i++)
                 {
                     if (nombreArchivos[i] == ",")
                     {
@@ -80,13 +91,13 @@ class ArchivosController {
 
                     nombres.add(nombreArchivos.trim())
                     println "nombre archivo " + nombres
-
-                    nombres.each{nombre->
+*/
+                    nombreArchivos.each{nombre->
                             def tagArchivo =[]
                             def archivo = dominio.Archivo.findByNombre(nombre)
                             if(archivo!=null){
 
-                                    tagArchivo= archivo.palabrasClave.findAll()
+                                    tagArchivo= archivo.palabrasClave
                             }
                             println "etiquetas: " + tags.palabraClave
                             println "lista nombres " + nombre
@@ -104,8 +115,9 @@ class ArchivosController {
                     }
 
                     println "FIN..."
-                    listaArchivos= nombres
-                    render (template:'listaPropiedades', model:[nombres:nombres, tags:tags])
+                    listaArchivos= nombreArchivos
+                    tags.sort { it.id }
+                    render (template:'listaPropiedades', model:[nombres:nombreArchivos, tags:tags])
             }
              render (template:'listaPropiedades', model:[nombres:null, tags:null])
     }
@@ -123,18 +135,22 @@ class ArchivosController {
     }
 
     def upload = {
-            def f = request.getFile('fileUpload')
-            if(!f.empty) {
+        List fileList = request.getFiles('filesUpload') // 'files' is the name of the input
+        fileList.each { file ->
+            println 'Nombre de archivo: ' + file.getOriginalFilename() 
+            if(!file.empty) {
 
                     new File( rutaActual ).mkdirs()
-                    f.transferTo( new File( rutaActual + File.separatorChar + f.getOriginalFilename() ) )
-                    flash.message = 'Your file has been uploaded'
+                    file.transferTo( new File( rutaActual + File.separatorChar + file.getOriginalFilename() ) )
+                    flash.message = 'Los archivos se subieron correctamente'
 
             }
-            else {
-                    flash.message = 'file cannot be empty'
-            }
-            redirect( action:list)
+        }
+        def par
+        if(rutaActual.length()>=grailsApplication.config.images.location.toString().length()){
+            par=rutaActual.substring(grailsApplication.config.images.location.toString().length())
+        }
+            redirect(controler: "archivos", action: "archivos", params: [ruta: par.replace(File.separatorChar.toString(),"|")])
     }
 
     def removerTag= {
@@ -168,7 +184,7 @@ class ArchivosController {
             tagsAux(tag)
         }
         tags=tagsAux*/
-        render (template:'listaPropiedades', model:[nombres:nombres, tags:tags])
+        render (template:'listaPropiedades', model:[nombres:listaArchivos, tags:tags])
     }
   
     
@@ -216,9 +232,10 @@ class ArchivosController {
                     def listaPalabras = obtenerPalabrasClave(params.etiquetas)
                     println "Lista obtenida" + listaPalabras
                     listaPalabras.each{palabra->
-                        
+                        palabra=palabra.toLowerCase()
                         def tag = dominio.PalabraClave.findByPalabraClave(palabra)
                         if(tag==null){
+                            
                             tag = new dominio.PalabraClave(palabraClave:palabra)
                             tag.save()
                         }   
@@ -238,11 +255,11 @@ class ArchivosController {
                         }
                     }
                 }
-                
+                println "Ahora los tags son: " + tags
             }
         }
        // flash.message = 'Los cambios se han aplicado correctamente'
-        render (template:'listaPropiedades', model:[nombres:nombres, tags:tags])
+        render (template:'listaPropiedades', model:[nombres:listaArchivos, tags:tags])
     }
 
     def obtenerDirectoriosRecorridos(String rutaAct) {

@@ -13,6 +13,25 @@ div.directorioPropiedades {
 	border-width: 1px;
 	background-color: #f8f8f8;
 }
+
+div.etiquetas {
+    height: initial;
+    display: inline;
+}
+
+input.botonesTag:hover {
+    background: #ddd;
+}
+
+input.botonesTag {
+    font-size: 10px;
+    font-family: Verdana,Helvetica;
+    font-weight: bold;
+    /* color: white; */
+    background-color: rgba(0,0,0,0);
+    border: 0px;
+}
+
 .separador{
     font-size: 18px;
     color: #999;

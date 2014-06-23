@@ -32,3 +32,5 @@
 /.settings/
 
 /target-eclipse/
+/devDb.h2.db
+/devDb.lock.db

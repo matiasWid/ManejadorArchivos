@@ -18,22 +18,23 @@
 </g:each>
 
 <%if (nombres){%>
-
-
-	<p>Etiquetas</p>
+    <p>Etiquetas</p>
        		<g:each in="${tags}" status = "a" var="tagsIterator">
-			<label>
-				${tagsIterator.palabraClave.toString()} 
-			</label>
-                        <g:formRemote name="tagsFrm" on404="alert('not found!')" update="archivosSeleccionados"
-              url="[controller: 'archivos', action:'removerTag']">
-                                <g:textField name="id" 
-				 value="${tagsIterator.id}" hidden="true"/>
-				<span class="button"><g:actionSubmit class="edit" value="X"/></span>
-                        </g:formRemote>
-		</g:each>
+                        <div class="etiquetas">
+                            
+                            <g:formRemote name="tagsFrm" on404="alert('not found!')" update="archivosSeleccionados"
+                  url="[controller: 'archivos', action:'removerTag']">
+                                    <label>
+                                        ${tagsIterator.palabraClave.toString()} 
+                                    </label>
+                                    <g:textField name="id" 
+                                     value="${tagsIterator.id}" hidden="true"/>
+                                    <span class="button"><g:actionSubmit class="botonesTag" value="X"/></span>
+                            </g:formRemote>
+                    </div>
+                </g:each>
 
-<g:formRemote name="tagsFrm" on404="alert('not found!')" update="archivosSeleccionados"
+<g:formRemote name="atributosFrm" on404="alert('not found!')" update="archivosSeleccionados"
               url="[controller: 'archivos', action:'editarAtributos']">
         <%if (nombres.size() == 1){%>
 	        <g:textField 
