@@ -3,11 +3,14 @@ import java.nio.file.*
 import java.io.IOException
 import grails.converters.JSON
 import groovy.io.FileType
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 class ArchivosController {
     def allowedMethods = []
     String rutaActual
     def listaArchivos=[]
+    def listaArchivosMarcados=[]
     def nombreArchivos =[]
     static transactional = true
     def nombres = []
@@ -22,10 +25,11 @@ class ArchivosController {
             //primero obtengo los directorios
             if(!params.ruta){
                     def f = new File(grailsApplication.config.images.location.toString())
-                    f.eachDir{
-                            dir ->listaDirectorios.add(dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
-                    }
-                    rutaActual = f.getPath()
+                    
+                f.eachDir{
+                    dir ->listaDirectorios.add(dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
+                }
+                rutaActual = f.getPath()
             }else{
                     String ruta = params.ruta
                     def f = new File(grailsApplication.config.images.location.toString() + File.separatorChar
@@ -92,32 +96,34 @@ class ArchivosController {
                     nombres.add(nombreArchivos.trim())
                     println "nombre archivo " + nombres
 */
-                    nombreArchivos.each{nombre->
-                            def tagArchivo =[]
-                            def archivo = dominio.Archivo.findByNombre(nombre)
-                            if(archivo!=null){
+                    if(rutaActual != null){
+                        nombreArchivos.each{nombre->
+                                def tagArchivo =[]
+                                def archivo = dominio.Archivo.findByRuta(rutaActual + File.separatorChar + nombre)
+                                if(archivo!=null){
 
-                                    tagArchivo= archivo.palabrasClave
-                            }
-                            println "etiquetas: " + tags.palabraClave
-                            println "lista nombres " + nombre
-                            tagArchivo.each{tag->
-                                    boolean encontro = false
-                                    tags.each{iterador->
-                                            if(iterador.palabraClave==tag.palabraClave){
-                                                    encontro=true
-                                            }
-                                    }
-                                    if (!encontro){
-                                            tags.add(tag)
-                                    }
-                            }
-                    }
+                                        tagArchivo= archivo.palabrasClave
+                                }
+                                println "etiquetas: " + tags.palabraClave
+                                println "lista nombres " + nombre
+                                tagArchivo.each{tag->
+                                        boolean encontro = false
+                                        tags.each{iterador->
+                                                if(iterador.palabraClave==tag.palabraClave){
+                                                        encontro=true
+                                                }
+                                        }
+                                        if (!encontro){
+                                                tags.add(tag)
+                                        }
+                                }
+                        }
 
-                    println "FIN..."
-                    listaArchivos= nombreArchivos
-                    tags.sort { it.id }
-                    render (template:'listaPropiedades', model:[nombres:nombreArchivos, tags:tags])
+                        println "FIN..."
+                        listaArchivosMarcados= nombreArchivos
+                        tags.sort { it.id }
+                        render (template:'listaPropiedades', model:[nombres:nombreArchivos, tags:tags])
+                }
             }
              render (template:'listaPropiedades', model:[nombres:null, tags:null])
     }
@@ -143,19 +149,43 @@ class ArchivosController {
                     new File( rutaActual ).mkdirs()
                     file.transferTo( new File( rutaActual + File.separatorChar + file.getOriginalFilename() ) )
                     flash.message = 'Los archivos se subieron correctamente'
-
+                    def archivo = new dominio.Archivo(ruta:rutaActual + File.separatorChar.toString() + file.getOriginalFilename() , nombre:file.getOriginalFilename() )
+                    archivo.save()
             }
         }
         def par
         if(rutaActual.length()>=grailsApplication.config.images.location.toString().length()){
             par=rutaActual.substring(grailsApplication.config.images.location.toString().length())
         }
+        if (par!=null){
             redirect(controler: "archivos", action: "archivos", params: [ruta: par.replace(File.separatorChar.toString(),"|")])
+        }
+        else{
+            redirect(controler: "archivos", action: "archivos")
+        }
+    }
+    
+    def multipleFileDownload={
+        response.setContentType('APPLICATION/OCTET-STREAM')
+        response.setHeader('Content-Disposition', 'Attachment;Filename="Archivos.zip"')
+        ZipOutputStream zip = new ZipOutputStream(response.outputStream)
+        
+        listaArchivosMarcados.each{nombre->
+            def file = new File(rutaActual + File.separatorChar + nombre)
+
+            if (file.exists()) {
+                def fileEntry = new ZipEntry(nombre)
+                zip.putNextEntry(fileEntry)
+                zip.write(file.bytes)
+            }
+        }
+        zip.close()
+        return
     }
 
     def removerTag= {
         
-	    listaArchivos.each{ archivoIt->
+	    listaArchivosMarcados.each{ archivoIt->
 	        println rutaActual
 	        if(rutaActual != null){
 	            def archivo = dominio.Archivo.findByRuta(rutaActual + File.separatorChar.toString() + archivoIt)
@@ -184,10 +214,9 @@ class ArchivosController {
             tagsAux(tag)
         }
         tags=tagsAux*/
-        render (template:'listaPropiedades', model:[nombres:listaArchivos, tags:tags])
+        render (template:'listaPropiedades', model:[nombres:listaArchivosMarcados, tags:tags])
     }
-  
-    
+      
     def delete = {
             def filename = params.id.replace('###', '.')
             def file = new File( grailsApplication.config.images.location.toString() + File.separatorChar +   filename )
@@ -196,9 +225,29 @@ class ArchivosController {
             redirect( action:list )
     }
     
+    def nuevaCarpeta ={
+        if(params.dirName != null && rutaActual != null){
+            def d1= new File(rutaActual + File.separatorChar + params.dirName)
+            d1.mkdir()
+            
+        }
+         def par
+        if(rutaActual.length()>=grailsApplication.config.images.location.toString().length()){
+            par=rutaActual.substring(grailsApplication.config.images.location.toString().length())
+        }
+        if (par!=null){
+            redirect(controler: "archivos", action: "archivos", params: [ruta: par.replace(File.separatorChar.toString(),"|")])
+        }
+        else
+        {
+            redirect(controler: "archivos", action: "archivos")
+        }
+        
+    }
+    
     def editarAtributos = {
     flash.message = ''
-        listaArchivos.each{ archivoIt->
+        listaArchivosMarcados.each{ archivoIt->
             println rutaActual
             println "El archivo se llama: " + archivoIt
             if(rutaActual != null){
@@ -208,15 +257,18 @@ class ArchivosController {
                     archivo.save()
                 }
 
-                if(listaArchivos.size() == 1 && params.nombreArchivo != archivoIt.substring(0,archivoIt.lastIndexOf('.'))){
+                if(listaArchivosMarcados.size() == 1 && params.nombreArchivo != archivoIt.substring(0,archivoIt.lastIndexOf('.'))){
                     try {
                         //   Files.move(Path, Path, CopyOption)
-                        def file1 = new File(rutaActual + File.separatorChar.toString() + archivoIt)
-                        def file2 = new File(rutaActual + File.separatorChar.toString() + 
-                                            params.nombreArchivo + archivoIt.substring(archivoIt.lastIndexOf('.')))
+                        def nombreActual = rutaActual + File.separatorChar.toString() + archivoIt
+                        def nombreCambiado = rutaActual + File.separatorChar.toString() + 
+                                            params.nombreArchivo + archivoIt.substring(archivoIt.lastIndexOf('.'))
+                        def file1 = new File(nombreActual)
+                        def file2 = new File(nombreCambiado)
                         if(!file2.exists()){
                             file1.renameTo(file2)
                             archivoIt = params.nombreArchivo + archivoIt.substring(archivoIt.lastIndexOf('.'))
+                            
                         }else{
                             flash.message = 'No se pudo cambiar el nombre, ya existe un archivo con ese nombre'
                         }
@@ -247,7 +299,7 @@ class ArchivosController {
                             archivo.addToPalabrasClave(tag)
                     		archivo.save(flush: true)
                         }
-        					 catch (Exception e) {
+                        catch (Exception e) {
                                 println "ocurrio la exepcion"
                         }
                         if((tags.findIndexOf{it.id == tag.id}) == -1){
@@ -259,7 +311,7 @@ class ArchivosController {
             }
         }
        // flash.message = 'Los cambios se han aplicado correctamente'
-        render (template:'listaPropiedades', model:[nombres:listaArchivos, tags:tags])
+        render (template:'listaPropiedades', model:[nombres:listaArchivosMarcados, tags:tags])
     }
 
     def obtenerDirectoriosRecorridos(String rutaAct) {

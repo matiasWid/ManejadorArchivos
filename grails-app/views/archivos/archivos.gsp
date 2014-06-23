@@ -19,8 +19,9 @@
                     <ul>
                         <li><g:textField name="busqueda" value=""
                                 placeholder="Ingrese el texto a buscar" /></li>
-                        <li><a href="" id="botonSubir">Subir</a></li>
-                        <li><a href="" id="botonDescargar">Descargar</a></li>
+                        <li><a id="botonSubir">Subir</a></li>
+                        <li><a id="botonCarpeta">Crear carpeta</a></li>
+                        <li><g:link controller="archivos" action="multipleFileDownload">Descargar</g:link></li>
                         <li><a href="" id="botonCortar">Cortar</a></li>
                         <li><a href="" id="botonCopiar">Copiar</a></li>
                         <li><a href="" id="botonPegar">Pegar</a></li>
@@ -30,7 +31,7 @@
             </div>
 
         </header>
-        <div id="divSubir">
+        <div id="divSubir" class="sliders">
             <h1>Subir archivo:</h1><br>
             <g:form method="post"  enctype="multipart/form-data">
                 <div class="dialog">
@@ -39,6 +40,18 @@
                 </div>
                 <div class="buttons">
                     <span class="button"><g:actionSubmit class="upload" value="Subir" action="upload" /></span>
+                </div>
+           </g:form>
+        </div>
+        <div id="directorioNuevo"  class="sliders">
+            <h1>Crear una nueva carpeta</h1><br>
+            <g:form method="post">
+                <div class="dialog">
+                    <input placeholder = "nombre de carptea"
+                    type="text" id="nombreCarpeta" name="dirName"/>
+                </div>
+                <div class="buttons">
+                    <span class="button"><g:actionSubmit class="upload" value="Crear" action="nuevaCarpeta" /></span>
                 
                 </div>
            </g:form>
@@ -150,6 +163,14 @@
     <script type="text/javascript">
         
         $(document).ready(function(){
+        
+        $( "#botonSubir" ).click(function() {
+            $( "#divSubir" ).toggle( "slide" );
+          });
+          
+          $( "#botonCarpeta" ).click(function() {
+            $( "#directorioNuevo" ).toggle( "slide" );
+          });
  
 	//Checkbox
 	$("input[name=checktodos]").change(function(){
