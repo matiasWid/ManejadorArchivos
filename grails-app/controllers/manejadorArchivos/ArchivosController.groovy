@@ -146,13 +146,40 @@ class ArchivosController {
             println 'Nombre de archivo: ' + file.getOriginalFilename() 
             if(!file.empty) {
 
-                    new File( rutaActual ).mkdirs()
-                    file.transferTo( new File( rutaActual + File.separatorChar + file.getOriginalFilename() ) )
-                    flash.message = 'Los archivos se subieron correctamente'
-                    def archivo = new dominio.Archivo(ruta:rutaActual + File.separatorChar.toString() + file.getOriginalFilename() , nombre:file.getOriginalFilename() )
-                    archivo.save()
+                new File( rutaActual ).mkdirs()
+                file.transferTo( new File( rutaActual + File.separatorChar + file.getOriginalFilename() ) )
+                flash.message = 'Los archivos se subieron correctamente'
+                def archivo = new dominio.Archivo(ruta:rutaActual + File.separatorChar.toString() + file.getOriginalFilename() , nombre:file.getOriginalFilename() )
+                archivo.save()
+                println "Etiquetas!!!!!:  " + params.tags
+
+                if(params.etiquetas != ""){
+                    def listaPalabras = obtenerPalabrasClave(params.etiquetas)
+                    println "Lista obtenida" + listaPalabras
+                    listaPalabras.each{palabra->
+                        palabra=palabra.toLowerCase()
+                        def tag = dominio.PalabraClave.findByPalabraClave(palabra)
+                        if(tag==null){
+
+                            tag = new dominio.PalabraClave(palabraClave:palabra)
+                            tag.save()
+                        }   
+                        println "Intentando meter la palabra: " + tag
+                        try { 
+                            tag.addToArchivos(archivo)
+                            tag.save(flush: true)
+
+                            archivo.addToPalabrasClave(tag)
+                            archivo.save(flush: true)
+                            }
+                            catch (Exception e) {
+                                    println "ocurrio la exepcion"
+                            }
+                    }
+                }
             }
         }
+                
         def par
         if(rutaActual.length()>=grailsApplication.config.images.location.toString().length()){
             par=rutaActual.substring(grailsApplication.config.images.location.toString().length())
@@ -245,11 +272,13 @@ class ArchivosController {
         
     }
     
+    
     def editarAtributos = {
     flash.message = ''
         listaArchivosMarcados.each{ archivoIt->
             println rutaActual
             println "El archivo se llama: " + archivoIt
+            
             if(rutaActual != null){
                 def archivo = dominio.Archivo.findByRuta(rutaActual + File.separatorChar.toString() + archivoIt)
                 if(!archivo){
@@ -259,18 +288,33 @@ class ArchivosController {
 
                 if(listaArchivosMarcados.size() == 1 && params.nombreArchivo != archivoIt.substring(0,archivoIt.lastIndexOf('.'))){
                     try {
-                        //   Files.move(Path, Path, CopyOption)
+                        //   Renombrado de archivos
                         def nombreActual = rutaActual + File.separatorChar.toString() + archivoIt
-                        def nombreCambiado = rutaActual + File.separatorChar.toString() + 
-                                            params.nombreArchivo + archivoIt.substring(archivoIt.lastIndexOf('.'))
+                        def soloNombreCambiado = params.nombreArchivo + archivoIt.substring(archivoIt.lastIndexOf('.'))
+                        def nombreCambiado = rutaActual + File.separatorChar.toString() + soloNombreCambiado
+                       
                         def file1 = new File(nombreActual)
                         def file2 = new File(nombreCambiado)
-                        if(!file2.exists()){
-                            file1.renameTo(file2)
-                            archivoIt = params.nombreArchivo + archivoIt.substring(archivoIt.lastIndexOf('.'))
-                            
+                        println "Probando si el archivo existe en el disco"
+                        if(!file1.exists()){
+                            println "El archivo no existe en el disco"
+                            archivo.delete()
                         }else{
-                            flash.message = 'No se pudo cambiar el nombre, ya existe un archivo con ese nombre'
+                            if(!file2.exists()){
+                                file1.renameTo(file2)
+                                archivoIt = params.nombreArchivo + archivoIt.substring(archivoIt.lastIndexOf('.'))
+
+
+                                if(archivo!=null){
+                                    println "Cambiando el nombre en la base"
+                                    archivo.ruta = nombreCambiado
+                                    archivo.nombre = soloNombreCambiado
+                                    archivo.save()
+                                }
+
+                            }else{
+                                flash.message = 'No se pudo cambiar el nombre, ya existe un archivo con ese nombre'
+                            }
                         }
                     } catch (Exception e) {
                         println(e)
@@ -311,7 +355,8 @@ class ArchivosController {
             }
         }
        // flash.message = 'Los cambios se han aplicado correctamente'
-        render (template:'listaPropiedades', model:[nombres:listaArchivosMarcados, tags:tags])
+        render (template:'listaPropiedades', model:[nombres:listaArchivosMarcados, tags:tags,listaArchivos:null])
+        
     }
 
     def obtenerDirectoriosRecorridos(String rutaAct) {

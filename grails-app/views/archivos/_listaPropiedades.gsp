@@ -22,7 +22,7 @@
        		<g:each in="${tags}" status = "a" var="tagsIterator">
                         <div class="etiquetas">
                             
-                            <g:formRemote name="tagsFrm" on404="alert('not found!')" update="archivosSeleccionados"
+                            <g:formRemote name="tagsFrm" on404="alert('not found!')" update="directorioPropiedades" 
                   url="[controller: 'archivos', action:'removerTag']">
                                     <label>
                                         ${tagsIterator.palabraClave.toString()} 
@@ -38,8 +38,8 @@
               url="[controller: 'archivos', action:'editarAtributos']">
         <%if (nombres.size() == 1){%>
 	        <g:textField 
-	        name= "nombreArchivo"
-	        id="nombreArchivo" 
+                name= "nombreArchivo"
+                id="nombreArchivo" 
 	        type= "text" 
 	        placeholder= "Nombre del archivo"
 	        value = "${nombres[0].toString().substring(0,nombres[0].toString().lastIndexOf('.'))}"/>

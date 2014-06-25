@@ -37,6 +37,7 @@
                 <div class="dialog">
                     <label for="fileUpload">Subir:</label>
                     <input type="file" id="filesUpload" name="filesUpload" multiple="multiple"/>
+                    <input type="text" id="tags" name="etiquetas"  placeholder= "Etiquetas"/>
                 </div>
                 <div class="buttons">
                     <span class="button"><g:actionSubmit class="upload" value="Subir" action="upload" /></span>
@@ -47,7 +48,7 @@
             <h1>Crear una nueva carpeta</h1><br>
             <g:form method="post">
                 <div class="dialog">
-                    <input placeholder = "nombre de carptea"
+                    <input placeholder = "nombre de carptea" required
                     type="text" id="nombreCarpeta" name="dirName"/>
                 </div>
                 <div class="buttons">
