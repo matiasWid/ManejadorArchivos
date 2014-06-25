@@ -9,6 +9,7 @@
         <link rel="stylesheet"
         href="${resource(dir: 'css', file: 'estilos.css')}" type="text/css">
         <script src="${resource(dir: 'js', file: 'jquery.js')}"></script>
+        <script src="${resource(dir: 'js', file: 'funcionesJs.js')}" type="text/javascript"></script>
         <meta charset="utf-8">
         <title>Manejador de archivos</title>
     </head>
@@ -21,7 +22,6 @@
                                 placeholder="Ingrese el texto a buscar" /></li>
                         <li><a id="botonSubir">Subir</a></li>
                         <li><a id="botonCarpeta">Crear carpeta</a></li>
-                        <li><g:link controller="archivos" action="multipleFileDownload">Descargar</g:link></li>
                         <li><a href="" id="botonCortar">Cortar</a></li>
                         <li><a href="" id="botonCopiar">Copiar</a></li>
                         <li><a href="" id="botonPegar">Pegar</a></li>
@@ -31,6 +31,7 @@
             </div>
 
         </header>
+        
         <div id="divSubir" class="sliders">
             <h1>Subir archivo:</h1><br>
             <g:form method="post"  enctype="multipart/form-data">
@@ -58,6 +59,7 @@
            </g:form>
         </div>
         <div id="directorioActual">
+            <img id="imgCarga" src="../images/spinner.gif"/>
             <span class="directorio">
                 <g:link action='archivos'>
                     Inicio
@@ -99,7 +101,9 @@
                     </thead>
                     <tbody>
                         <!--se listan los directorios-->
+                        <%def pos=0%>
                         <g:each in="${listaDirectorios}" status="i" var="listaInstance">
+                            
                             <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
                                 <td>
                                     <label> 
@@ -111,29 +115,22 @@
                                         </g:link>
                                     </label>
                                 </td>
+                                <td></td>
+                                <td></td>
                             </tr>
-                        </g:each><!--
-                        <g:each in="${listaArchivos}" status="i" var="listaInstance">
-                            <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-                                <td><label> <g:checkBox id="check${i}"
-                                        name='${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}' 
-                                        value="${false}"
-                                            onchange="obtenerMarcados()" /> <g:link action='archivos'
-                                            params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
-                                            ${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}
-                                        </g:link>
-                                    </label></td>
-                            </tr>
-                        </g:each>-->
+                            <%pos=i+1%>
+                        </g:each>
+                       
                         <!--se listan los archivos en el directorio-->
                         <g:formRemote name="archivosFrm" on404="alert('not found!')" update="archivosSeleccionados"
                             url="[controller: 'archivos', action:'listaPropiedades']">
                             <g:each in="${listaArchivos}" status="i" var="listaInstance">
-                                <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+                                
+                                <tr class="${(pos % 2) == 0 ? 'odd' : 'even'}">
                                     <td>
                                         <label> 
                                             <%
-                                            def nombre = listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)
+                                            def nombre = listaInstance.nombre.toString().substring(listaInstance.nombre.toString().lastIndexOf(File.separatorChar.toString())+1)
                                             
                                             %>
                                             <g:checkBox id="${i}"
@@ -142,11 +139,24 @@
                                             onchange="hacerClic()"
                                             checked="${false}"/> 
                                             <g:link action='archivos'
-                                                params='[ruta : "${listaInstance.replace(File.separatorChar.toString(), '#')}"]'>
-                                                ${listaInstance.toString().substring(listaInstance.toString().lastIndexOf(File.separatorChar.toString())+1)}
+                                                params='[ruta : "${listaInstance.nombre.replace(File.separatorChar.toString(), '|')}"]'>
+                                                ${listaInstance.nombre.toString().substring(listaInstance.nombre.toString().lastIndexOf(File.separatorChar.toString())+1)}
                                             </g:link>
-                                        </label></td>
+                                        </label>
+                                    </td>
+                                        <td></td>
+                                        <td>
+                                            <label> 
+                                                <%
+                                                def fecha = listaInstance.fecha
+
+                                                %>
+                                                ${fecha.format( 'dd-MMM-yyyy HH:mm')}
+                                            </label>
+                                             
+                                        </td>
                                 </tr>
+                                <%pos=pos+1%>
                             </g:each>
                             <g:actionSubmit id="botonSubmit" class="edit" value="x" hidden="true"/>
                             </g:formRemote>
@@ -161,58 +171,5 @@
             </div>
         </div>
     </body>
-    <script type="text/javascript">
-        
-        $(document).ready(function(){
-        
-        $( "#botonSubir" ).click(function() {
-            $( "#divSubir" ).toggle( "slide" );
-          });
-          
-          $( "#botonCarpeta" ).click(function() {
-            $( "#directorioNuevo" ).toggle( "slide" );
-          });
- 
-	//Checkbox
-	$("input[name=checktodos]").change(function(){
-		$('input[type=checkbox]').each( function() {			
-			if($("input[name=checktodos]:checked").length == 1){
-				this.checked = true;
-			} else {
-				this.checked = false;
-			}
-		});
-                hacerClic();
-	});
- 
-        });
-        
-        function hacerClic(){
-        $("#botonSubmit").click();
-        }
-        onComplete:obtenerMarcados();
-        function llamarAjax(){
-        
-            jQuery.ajax({type:'POST',data:jQuery(this).serialize(), url:'/ManejadorArchivos/archivos/listaPropiedades',success:function(data,textStatus){jQuery('#archivosSeleccionados').html(data);},error:function(XMLHttpRequest,textStatus,errorThrown){}});return false
-        };
-        function obtenerMarcados(){
-
-            var sList =[];
-
-            $("input:checked").each(function () {
-            console.log ($(this.name));
-
-            var nombre =  $(this.name);
-
-            sList.push(nombre.selector);
-
-            });
-            console.log (sList);
-
-        ${remoteFunction(controller: 'archivos', action:'listaPropiedades',
-                        params:'\'lista=\' + sList',
-                        update:[success:'archivosSeleccionados', failure:'archivosSeleccionados'])}
-        };
-        
-    </script>
+  
 </html>

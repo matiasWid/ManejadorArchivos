@@ -40,17 +40,25 @@ class ArchivosController {
                     rutaActual = f.getPath()
             }
             //obtengo la lista de archivos
+            
             if(!params.ruta){
                     new File (grailsApplication.config.images.location.toString()).eachFile(FileType.FILES) {
-
-                            dir ->listaArchivos.add(dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
+                            dir ->
+                            Date d = new Date(dir.lastModified())
+                            listaArchivos.add(nombre: dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1),fecha: d)
+                            
+                            println "Fecha de modificacion " + d
                     }
             }else{
                     String ruta = params.ruta
                     def f = new File(grailsApplication.config.images.location.toString() + File.separatorChar
                              + params.ruta.replace('|',File.separatorChar.toString()))
                     f.eachFile(FileType.FILES){
-                            dir ->listaArchivos.add(params.ruta.replace('|',File.separatorChar.toString()) + File.separatorChar + dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
+                            dir ->
+                            Date d = new Date(dir.lastModified())
+                            listaArchivos.add(nombre: params.ruta.replace('|',File.separatorChar.toString()) + File.separatorChar + dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1),fecha: d)
+                            
+                            println "Fecha de modificacion " + d
                             }
 
             }
@@ -80,49 +88,34 @@ class ArchivosController {
             //phraser para obtener una lista con los nombres de archivos
             //separados por una coma para manjearlos mas comodo en la view
             println nombreArchivos
-            
-           /* for(int i=0;i<nombreArchivos.size();i++)
-                {
-                    if (nombreArchivos[i] == ",")
-                    {
-                        println "posicion " + i
-                        nombres.add(nombreArchivos.substring(0,i).trim())
-                        println "nombre archivo " + nombreArchivos.substring(0,i).trim()
-                        nombreArchivos = nombreArchivos.substring(nombreArchivos.substring(0,i).size()+1).trim()
-                        i= 0
-                    }
-                }
+           
+            if(rutaActual != null){
+                nombreArchivos.each{nombre->
+                        def tagArchivo =[]
+                        def archivo = dominio.Archivo.findByRuta(rutaActual + File.separatorChar + nombre)
+                        if(archivo!=null){
 
-                    nombres.add(nombreArchivos.trim())
-                    println "nombre archivo " + nombres
-*/
-                    if(rutaActual != null){
-                        nombreArchivos.each{nombre->
-                                def tagArchivo =[]
-                                def archivo = dominio.Archivo.findByRuta(rutaActual + File.separatorChar + nombre)
-                                if(archivo!=null){
-
-                                        tagArchivo= archivo.palabrasClave
+                                tagArchivo= archivo.palabrasClave
+                        }
+                        println "etiquetas: " + tags.palabraClave
+                        println "lista nombres " + nombre
+                        tagArchivo.each{tag->
+                                boolean encontro = false
+                                tags.each{iterador->
+                                        if(iterador.palabraClave==tag.palabraClave){
+                                                encontro=true
+                                        }
                                 }
-                                println "etiquetas: " + tags.palabraClave
-                                println "lista nombres " + nombre
-                                tagArchivo.each{tag->
-                                        boolean encontro = false
-                                        tags.each{iterador->
-                                                if(iterador.palabraClave==tag.palabraClave){
-                                                        encontro=true
-                                                }
-                                        }
-                                        if (!encontro){
-                                                tags.add(tag)
-                                        }
+                                if (!encontro){
+                                        tags.add(tag)
                                 }
                         }
+                }
 
-                        println "FIN..."
-                        listaArchivosMarcados= nombreArchivos
-                        tags.sort { it.id }
-                        render (template:'listaPropiedades', model:[nombres:nombreArchivos, tags:tags])
+                println "FIN..."
+                listaArchivosMarcados= nombreArchivos
+                tags.sort { it.id }
+                render (template:'listaPropiedades', model:[nombres:nombreArchivos, tags:tags])
                 }
             }
              render (template:'listaPropiedades', model:[nombres:null, tags:null])
@@ -224,9 +217,9 @@ class ArchivosController {
 	                    tag.removeFromArchivos(archivo)
 	                    archivo.removeFromPalabrasClave(tag)
                             println "Indice en lista: " + tags.findIndexOf{it.id == tag.id}
-                        if(tags.findIndexOf{it.id == tag.id}>-1){
-                            tags.remove(tags.findIndexOf{it.id == tag.id})
-                        }
+                            if(tags.findIndexOf{it.id == tag.id}>-1){
+                                tags.remove(tags.findIndexOf{it.id == tag.id})
+                            }
                             println "Ahora las tags son: " + tags
                     }
                 }
@@ -272,9 +265,8 @@ class ArchivosController {
         
     }
     
-    
-    def editarAtributos = {
-    flash.message = ''
+    def editarNombre = {
+        flash.message = ''
         listaArchivosMarcados.each{ archivoIt->
             println rutaActual
             println "El archivo se llama: " + archivoIt
@@ -321,8 +313,24 @@ class ArchivosController {
                     }
                 }
                 println "Ahora el archivo se llama: " + archivoIt  
-                
+            }
 
+        }
+          def par
+        if(rutaActual.length()>=grailsApplication.config.images.location.toString().length()){
+            par=rutaActual.substring(grailsApplication.config.images.location.toString().length())
+        }
+        if (par!=null){
+            redirect(controler: "archivos", action: "archivos", params: [ruta: par.replace(File.separatorChar.toString(),"|")])
+        }
+        else
+        {
+            redirect(controler: "archivos", action: "archivos")
+        }
+    }
+    
+    def editarTags = {
+    
                 println "Etiquetas parametro: " + params.etiquetas
                   if(params.etiquetas != ""){
                     def listaPalabras = obtenerPalabrasClave(params.etiquetas)
@@ -352,10 +360,10 @@ class ArchivosController {
                     }
                 }
                 println "Ahora los tags son: " + tags
-            }
-        }
+            
+        
        // flash.message = 'Los cambios se han aplicado correctamente'
-        render (template:'listaPropiedades', model:[nombres:listaArchivosMarcados, tags:tags,listaArchivos:null])
+        render (template:'listaPropiedades', model:[nombres:listaArchivosMarcados, tags:tags])
         
     }
 

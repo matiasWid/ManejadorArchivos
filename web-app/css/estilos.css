@@ -48,8 +48,8 @@ input.botonesTag {
 }
 div#directorioActual {
     width: 80%;  
-    margin: 40px auto;
-    
+    margin: 0 auto;
+    margin-top: 40px;
 }
 a {
     color: #4183c4;
@@ -78,6 +78,27 @@ div.directorioPropiedades {
     overflow: auto;
 	
 }
+#imgCarga{
+    display: none;
+}
+
+p {
+    background-color: #efefef;
+    background-image: -moz-linear-gradient(top, #ffffff, #eaeaea);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #eaeaea));
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#ffffff', EndColorStr = '#eaeaea');
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#ffffff', EndColorStr='#eaeaea')";
+    color: #666666;
+    font-weight: bold;
+    line-height: 1.7em;
+    padding: 0.2em 0.6em;
+    margin-top: 1px;
+    text-align: center;
+}
+
+div.botonesAccion {
+    height: 32px;
+}
 
 #listaPropiedades{
 		overflow: auto;
@@ -88,9 +109,11 @@ div.directorioPropiedades {
 
 
 #archivosSeleccionados{
-	width: 100%;
-	border-style: none;
-	height: 80%;
+    width: 100%;
+    border-style: none;
+    height: 90%;
+    color: #4183c4;
+    text-decoration: none;
 }
 
 #archivosSeleccionados{
@@ -104,6 +127,13 @@ div.directorioPropiedades {
 	
 	height: 100%;
 	/* border-style: solid; */
+}
+
+div#descargarArchivosMarcados {
+    text-align: center;
+    height: 21px;
+    margin-top: 30px;
+    background-color: rgb(45, 45, 45);
 }
 
 header {
@@ -125,6 +155,17 @@ header {
    =======================================
 */
 .botonesAccion nav {
+	list-style: none outside none;
+	display: block;
+	width: 720px;
+	height: 30px;
+	margin: 0pt;
+	padding: 0pt;
+	margin-left: 19pt;
+	overflow: hidden;
+}
+
+.botoneDescargar nav {
 	list-style: none outside none;
 	display: block;
 	width: 720px;
