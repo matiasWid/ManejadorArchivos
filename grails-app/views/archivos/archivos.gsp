@@ -18,8 +18,14 @@
             <div class="botonesAccion">
                 <nav id="listaAcciones">
                     <ul>
-                        <li><g:textField name="busqueda" value=""
-                                placeholder="Ingrese el texto a buscar" /></li>
+                        <li>
+                            <g:formRemote name="busquedaFrm" on404="alert('not found!')" update="listaDirectorios"
+                            url="[controller: 'archivos', action:'comenzarRecursivo']">
+                                <g:textField name="busqueda" value=""
+                                placeholder="Ingrese el texto a buscar" />
+                                     <span class="button"><g:actionSubmit class="upload" value="Buscar"/></span>
+                            </g:formRemote>        
+                        </li>
                         <li><a id="botonSubir">Subir</a></li>
                         <li><a id="botonCarpeta">Crear carpeta</a></li>
                         <li><a href="" id="botonCortar">Cortar</a></li>
@@ -31,7 +37,7 @@
             </div>
 
         </header>
-        
+       
         <div id="divSubir" class="sliders">
             <h1>Subir archivo:</h1><br>
             <g:form method="post"  enctype="multipart/form-data">
@@ -171,5 +177,4 @@
             </div>
         </div>
     </body>
-  
 </html>

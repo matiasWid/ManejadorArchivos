@@ -330,38 +330,50 @@ class ArchivosController {
     }
     
     def editarTags = {
-    
-                println "Etiquetas parametro: " + params.etiquetas
-                  if(params.etiquetas != ""){
-                    def listaPalabras = obtenerPalabrasClave(params.etiquetas)
-                    println "Lista obtenida" + listaPalabras
-                    listaPalabras.each{palabra->
-                        palabra=palabra.toLowerCase()
-                        def tag = dominio.PalabraClave.findByPalabraClave(palabra)
-                        if(tag==null){
-                            
-                            tag = new dominio.PalabraClave(palabraClave:palabra)
-                            tag.save()
-                        }   
-                        println "Intentando meter la palabra: " + tag
-                       try { 
-                            tag.addToArchivos(archivo)
-        					tag.save(flush: true)
-                     
-                            archivo.addToPalabrasClave(tag)
-                    		archivo.save(flush: true)
-                        }
-                        catch (Exception e) {
-                                println "ocurrio la exepcion"
-                        }
-                        if((tags.findIndexOf{it.id == tag.id}) == -1){
-                            tags.add(tag)
-                        }
-                    }
-                }
-                println "Ahora los tags son: " + tags
+        flash.message = ''
+        listaArchivosMarcados.each{ archivoIt->
+            println rutaActual
+            println "El archivo se llama: " + archivoIt
             
-        
+        if(rutaActual != null){
+            def archivo = dominio.Archivo.findByRuta(rutaActual + File.separatorChar.toString() + archivoIt)
+            if(!archivo){
+                archivo = new dominio.Archivo(ruta:rutaActual + File.separatorChar.toString() + archivoIt, nombre:archivoIt)
+                archivo.save()
+            }
+
+        println "Etiquetas parametro: " + params.etiquetas
+          if(params.etiquetas != ""){
+            def listaPalabras = obtenerPalabrasClave(params.etiquetas)
+            println "Lista obtenida" + listaPalabras
+            listaPalabras.each{palabra->
+                palabra=palabra.toLowerCase()
+                def tag = dominio.PalabraClave.findByPalabraClave(palabra)
+                if(tag==null){
+
+                    tag = new dominio.PalabraClave(palabraClave:palabra)
+                    tag.save()
+                }   
+                println "Intentando meter la palabra: " + tag
+               try { 
+                    tag.addToArchivos(archivo)
+                    tag.save(flush: true)
+
+                    archivo.addToPalabrasClave(tag)
+                        archivo.save(flush: true)
+                }
+                catch (Exception e) {
+                        println "ocurrio la exepcion" + e
+                }
+                if((tags.findIndexOf{it.id == tag.id}) == -1){
+                    tags.add(tag)
+                }
+            }
+        }
+        println "Ahora los tags son: " + tags
+            
+         }
+        }
        // flash.message = 'Los cambios se han aplicado correctamente'
         render (template:'listaPropiedades', model:[nombres:listaArchivosMarcados, tags:tags])
         
@@ -409,4 +421,31 @@ class ArchivosController {
                 println "lista nombres " + nombre
              }
        }
+    def listaDirBuscado =[]
+    def comenzarRecursivo(){
+        def f = new File(rutaActual)
+        listaDirBuscado=[]
+        println "Comienzo busqueda recursiva en la ruta: " + rutaActual
+        def resu=busquedaRecursiva(f, params.busqueda)
+        println resu
+        render (template:'resultadosBusqueda', model:[resu])
+        
+    }
+    def busquedaRecursiva(File f, String nombre){
+        def listaArchivos = []
+        f.eachFile(FileType.FILES){archivo->
+                def nombreArchivo = archivo.getPath().toString().substring(archivo.getPath().toString().lastIndexOf(File.separatorChar.toString())+1)
+                println "Nombre: " + nombreArchivo
+                if(nombreArchivo.contains(nombre)){
+                    listaArchivos.add(archivo.getPath().toString())
+                }
+            }
+            if(listaArchivos){
+                listaDirBuscado.add(directorio:f.getPath().toString(),archivos:listaArchivos)
+            }
+        f.eachDir{dir ->
+            busquedaRecursiva(dir,nombre)
+        }
+        return [ listaDirBuscado: listaDirBuscado]
+    }
 }
