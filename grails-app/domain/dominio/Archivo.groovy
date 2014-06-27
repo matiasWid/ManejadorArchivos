@@ -43,4 +43,9 @@ class Archivo {
         estadoconservacion nullable:true
         formato nullable:true
     }
+    
+     static mapping = {
+        palabrasClave joinTable: [name: "archivo_palabras_clave", key: 'archivo_id' ]
+    }
+    
 }

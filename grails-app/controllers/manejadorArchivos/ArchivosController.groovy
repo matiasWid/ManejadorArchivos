@@ -433,6 +433,8 @@ class ArchivosController {
     }
     def busquedaRecursiva(File f, String nombre){
         def listaArchivos = []
+        def a = dominio.Archivo.executeQuery("select archivo.nombre from palabra_clave, archivo_palabras_clave, archivo where palabra_clave like '%pr%' and palabra_clave.id=archivo_palabras_clave.palabra_clave_id and archivo_palabras_clave.archivo_id=archivo.id")
+        println = "Archivos bd: " + a
         f.eachFile(FileType.FILES){archivo->
                 def nombreArchivo = archivo.getPath().toString().substring(archivo.getPath().toString().lastIndexOf(File.separatorChar.toString())+1)
                 println "Nombre: " + nombreArchivo
@@ -441,6 +443,7 @@ class ArchivosController {
                 }
             }
             if(listaArchivos){
+                println "Directorio: " + f.getPath().toString()
                 listaDirBuscado.add(directorio:f.getPath().toString(),archivos:listaArchivos)
             }
         f.eachDir{dir ->

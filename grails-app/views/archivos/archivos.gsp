@@ -22,7 +22,7 @@
                             <g:formRemote name="busquedaFrm" on404="alert('not found!')" update="listaDirectorios"
                             url="[controller: 'archivos', action:'comenzarRecursivo']">
                                 <g:textField name="busqueda" value=""
-                                placeholder="Ingrese el texto a buscar" />
+                                placeholder="Ingrese el texto a buscar" required="true"/>
                                      <span class="button"><g:actionSubmit class="upload" value="Buscar"/></span>
                             </g:formRemote>        
                         </li>
@@ -32,6 +32,7 @@
                         <li><a href="" id="botonCopiar">Copiar</a></li>
                         <li><a href="" id="botonPegar">Pegar</a></li>
                         <li><a href="" id="botonMisArchivos">Mis archivos</a></li>
+                        <li><a href="" id="userName">Usuario: ${session.user.nick}</a></li>
                     </ul>
                 </nav>
             </div>

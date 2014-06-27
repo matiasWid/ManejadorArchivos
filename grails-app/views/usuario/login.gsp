@@ -37,7 +37,7 @@
 				</g:eachError>
 			</ul>
 		</g:hasErrors>
-		<g:form action="authenticate">
+		<g:form action="login">
 			<fieldset class="form">
 				<div
 					class="fieldcontain ${hasErrors(bean: usuarioInstance, field: 'nick', 'error')} ">
