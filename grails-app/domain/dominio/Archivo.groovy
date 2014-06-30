@@ -19,7 +19,8 @@ class Archivo {
         editorial: Editorial,
         descripcion: NivelDescripcion,
         lugar: Lugar,
-        estadoconservacion: EstadoConservacion
+        estadoconservacion: EstadoConservacion,
+        directorio:Directorio
     ]
     
     static hasMany = [palabrasClave:PalabraClave,
@@ -43,9 +44,4 @@ class Archivo {
         estadoconservacion nullable:true
         formato nullable:true
     }
-    
-     static mapping = {
-        palabrasClave joinTable: [name: "archivo_palabras_clave", key: 'archivo_id' ]
-    }
-    
 }

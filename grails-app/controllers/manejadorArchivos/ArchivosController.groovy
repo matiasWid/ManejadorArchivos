@@ -20,55 +20,55 @@ class ArchivosController {
     def index = { redirect(action:archivos) }
 	
     def archivos= {
-            def listaDirectorios = []
-            listaArchivos = []
-            //primero obtengo los directorios
-            if(!params.ruta){
-                    def f = new File(grailsApplication.config.images.location.toString())
+        def listaDirectorios = []
+        listaArchivos = []
+        //primero obtengo los directorios
+        if(!params.ruta){
+            def f = new File(grailsApplication.config.images.location.toString())
                     
-                f.eachDir{
-                    dir ->listaDirectorios.add(dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
-                }
-                rutaActual = f.getPath()
-            }else{
-                    String ruta = params.ruta
-                    def f = new File(grailsApplication.config.images.location.toString() + File.separatorChar
-                             + params.ruta.replace('|',File.separatorChar.toString()))
-                    f.eachDir { 
-                            dir ->listaDirectorios.add(params.ruta.replace('|',File.separatorChar.toString()) + File.separatorChar + dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
-                            }
-                    rutaActual = f.getPath()
+            f.eachDir{
+                dir ->listaDirectorios.add(dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
             }
-            //obtengo la lista de archivos
+            rutaActual = f.getPath()
+        }else{
+            String ruta = params.ruta
+            def f = new File(grailsApplication.config.images.location.toString() + File.separatorChar
+                + params.ruta.replace('|',File.separatorChar.toString()))
+            f.eachDir { 
+                dir ->listaDirectorios.add(params.ruta.replace('|',File.separatorChar.toString()) + File.separatorChar + dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1))
+            }
+            rutaActual = f.getPath()
+        }
+        //obtengo la lista de archivos
             
-            if(!params.ruta){
-                    new File (grailsApplication.config.images.location.toString()).eachFile(FileType.FILES) {
-                            dir ->
-                            Date d = new Date(dir.lastModified())
-                            listaArchivos.add(nombre: dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1),fecha: d)
+        if(!params.ruta){
+            new File (grailsApplication.config.images.location.toString()).eachFile(FileType.FILES) {
+                dir ->
+                Date d = new Date(dir.lastModified())
+                listaArchivos.add(nombre: dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1),fecha: d)
                             
-                            println "Fecha de modificacion " + d
-                    }
-            }else{
-                    String ruta = params.ruta
-                    def f = new File(grailsApplication.config.images.location.toString() + File.separatorChar
-                             + params.ruta.replace('|',File.separatorChar.toString()))
-                    f.eachFile(FileType.FILES){
-                            dir ->
-                            Date d = new Date(dir.lastModified())
-                            listaArchivos.add(nombre: params.ruta.replace('|',File.separatorChar.toString()) + File.separatorChar + dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1),fecha: d)
-                            
-                            println "Fecha de modificacion " + d
-                            }
-
+                println "Fecha de modificacion " + d
             }
-            println listaArchivos
+        }else{
+            String ruta = params.ruta
+            def f = new File(grailsApplication.config.images.location.toString() + File.separatorChar
+                + params.ruta.replace('|',File.separatorChar.toString()))
+            f.eachFile(FileType.FILES){
+                dir ->
+                Date d = new Date(dir.lastModified())
+                listaArchivos.add(nombre: params.ruta.replace('|',File.separatorChar.toString()) + File.separatorChar + dir.getPath().toString().substring(dir.getPath().toString().lastIndexOf(File.separatorChar.toString())+1),fecha: d)
+                            
+                println "Fecha de modificacion " + d
+            }
 
-            println rutaActual
+        }
+        println listaArchivos
+
+        println rutaActual
 
         def listaDirRecorridos = obtenerDirectoriosRecorridos(rutaActual)
         return [ listaDirectorios: listaDirectorios, listaArchivos:listaArchivos, listaDirRecorridos:listaDirRecorridos ]
-}
+    }
 
     def listaPropiedades= {
         nombreArchivos=[]
@@ -82,7 +82,7 @@ class ArchivosController {
             }
         }
         
-            if (nombreArchivos){
+        if (nombreArchivos){
             //nombreArchivos = params.lista
             tags = []
             //phraser para obtener una lista con los nombres de archivos
@@ -91,46 +91,46 @@ class ArchivosController {
            
             if(rutaActual != null){
                 nombreArchivos.each{nombre->
-                        def tagArchivo =[]
-                        def archivo = dominio.Archivo.findByRuta(rutaActual + File.separatorChar + nombre)
-                        if(archivo!=null){
+                    def tagArchivo =[]
+                    def archivo = dominio.Archivo.findByRuta(rutaActual + File.separatorChar + nombre)
+                    if(archivo!=null){
 
-                                tagArchivo= archivo.palabrasClave
+                        tagArchivo= archivo.palabrasClave
+                    }
+                    println "etiquetas: " + tags.palabraClave
+                    println "lista nombres " + nombre
+                    tagArchivo.each{tag->
+                        boolean encontro = false
+                        tags.each{iterador->
+                            if(iterador.palabraClave==tag.palabraClave){
+                                encontro=true
+                            }
                         }
-                        println "etiquetas: " + tags.palabraClave
-                        println "lista nombres " + nombre
-                        tagArchivo.each{tag->
-                                boolean encontro = false
-                                tags.each{iterador->
-                                        if(iterador.palabraClave==tag.palabraClave){
-                                                encontro=true
-                                        }
-                                }
-                                if (!encontro){
-                                        tags.add(tag)
-                                }
+                        if (!encontro){
+                            tags.add(tag)
                         }
+                    }
                 }
 
                 println "FIN..."
                 listaArchivosMarcados= nombreArchivos
                 tags.sort { it.id }
                 render (template:'listaPropiedades', model:[nombres:nombreArchivos, tags:tags])
-                }
             }
-             render (template:'listaPropiedades', model:[nombres:null, tags:null])
+        }
+        render (template:'listaPropiedades', model:[nombres:null, tags:null])
     }
     
     def list = {
-            def fileResourceInstanceList = []
-            def f = new File( grailsApplication.config.images.location.toString() )
-            if( f.exists() ){
-                    f.eachFile(){ file->
-                            if( !file.isDirectory() )
-                                    fileResourceInstanceList.add( file.name )
-                    }
+        def fileResourceInstanceList = []
+        def f = new File( grailsApplication.config.images.location.toString() )
+        if( f.exists() ){
+            f.eachFile(){ file->
+                if( !file.isDirectory() )
+                fileResourceInstanceList.add( file.name )
             }
-            [ fileResourceInstanceList: fileResourceInstanceList ]
+        }
+        [ fileResourceInstanceList: fileResourceInstanceList ]
     }
 
     def upload = {
@@ -142,8 +142,17 @@ class ArchivosController {
                 new File( rutaActual ).mkdirs()
                 file.transferTo( new File( rutaActual + File.separatorChar + file.getOriginalFilename() ) )
                 flash.message = 'Los archivos se subieron correctamente'
-                def archivo = new dominio.Archivo(ruta:rutaActual + File.separatorChar.toString() + file.getOriginalFilename() , nombre:file.getOriginalFilename() )
+                def directorio = dominio.Directorio.findByRuta(rutaActual)
+                if(directorio==null){
+                    directorio = new dominio.Directorio(ruta:rutaActual)
+                    directorio.save()
+                }
+                def archivo = new dominio.Archivo(ruta:rutaActual + File.separatorChar.toString() + file.getOriginalFilename() , 
+                    nombre:file.getOriginalFilename(), directorio:directorio)
                 archivo.save()
+                directorio.addToArchivos(archivo)
+                directorio.save()
+                
                 println "Etiquetas!!!!!:  " + params.tags
 
                 if(params.etiquetas != ""){
@@ -164,10 +173,10 @@ class ArchivosController {
 
                             archivo.addToPalabrasClave(tag)
                             archivo.save(flush: true)
-                            }
-                            catch (Exception e) {
-                                    println "ocurrio la exepcion"
-                            }
+                        }
+                        catch (Exception e) {
+                            println "ocurrio la exepcion"
+                        }
                     }
                 }
             }
@@ -205,22 +214,22 @@ class ArchivosController {
 
     def removerTag= {
         
-	    listaArchivosMarcados.each{ archivoIt->
-	        println rutaActual
-	        if(rutaActual != null){
-	            def archivo = dominio.Archivo.findByRuta(rutaActual + File.separatorChar.toString() + archivoIt)
-	            if(archivo){
-	                println "Id tag: " + params.id
-	                def tag = dominio.PalabraClave.get(params.id)
-                        println "Tag: " + tag.id
-	                if(tag!=null){
-	                    tag.removeFromArchivos(archivo)
-	                    archivo.removeFromPalabrasClave(tag)
-                            println "Indice en lista: " + tags.findIndexOf{it.id == tag.id}
-                            if(tags.findIndexOf{it.id == tag.id}>-1){
-                                tags.remove(tags.findIndexOf{it.id == tag.id})
-                            }
-                            println "Ahora las tags son: " + tags
+        listaArchivosMarcados.each{ archivoIt->
+            println rutaActual
+            if(rutaActual != null){
+                def archivo = dominio.Archivo.findByRuta(rutaActual + File.separatorChar.toString() + archivoIt)
+                if(archivo){
+                    println "Id tag: " + params.id
+                    def tag = dominio.PalabraClave.get(params.id)
+                    println "Tag: " + tag.id
+                    if(tag!=null){
+                        tag.removeFromArchivos(archivo)
+                        archivo.removeFromPalabrasClave(tag)
+                        println "Indice en lista: " + tags.findIndexOf{it.id == tag.id}
+                        if(tags.findIndexOf{it.id == tag.id}>-1){
+                            tags.remove(tags.findIndexOf{it.id == tag.id})
+                        }
+                        println "Ahora las tags son: " + tags
                     }
                 }
             }
@@ -230,19 +239,19 @@ class ArchivosController {
         println tags
         tags.each{tag->
             
-            if(tag.id != params.id)
-            tagsAux(tag)
+        if(tag.id != params.id)
+        tagsAux(tag)
         }
         tags=tagsAux*/
         render (template:'listaPropiedades', model:[nombres:listaArchivosMarcados, tags:tags])
     }
       
     def delete = {
-            def filename = params.id.replace('###', '.')
-            def file = new File( grailsApplication.config.images.location.toString() + File.separatorChar +   filename )
-            file.delete()
-            flash.message = "file ${filename} removed"
-            redirect( action:list )
+        def filename = params.id.replace('###', '.')
+        def file = new File( grailsApplication.config.images.location.toString() + File.separatorChar +   filename )
+        file.delete()
+        flash.message = "file ${filename} removed"
+        redirect( action:list )
     }
     
     def nuevaCarpeta ={
@@ -251,7 +260,7 @@ class ArchivosController {
             d1.mkdir()
             
         }
-         def par
+        def par
         if(rutaActual.length()>=grailsApplication.config.images.location.toString().length()){
             par=rutaActual.substring(grailsApplication.config.images.location.toString().length())
         }
@@ -272,11 +281,20 @@ class ArchivosController {
             println "El archivo se llama: " + archivoIt
             
             if(rutaActual != null){
+                def directorio = dominio.Directorio.findByRuta(rutaActual)
+                if(directorio==null){
+                    directorio = new dominio.Directorio(ruta:rutaActual)
+                    directorio.save()
+                }
                 def archivo = dominio.Archivo.findByRuta(rutaActual + File.separatorChar.toString() + archivoIt)
                 if(!archivo){
-                    archivo = new dominio.Archivo(ruta:rutaActual + File.separatorChar.toString() + archivoIt, nombre:archivoIt)
+                    archivo = new dominio.Archivo(ruta:rutaActual + File.separatorChar.toString() + archivoIt, 
+                        nombre:archivoIt,directorio:directorio)
                     archivo.save()
                 }
+                
+                directorio.addToArchivos(archivo)
+                directorio.save()
 
                 if(listaArchivosMarcados.size() == 1 && params.nombreArchivo != archivoIt.substring(0,archivoIt.lastIndexOf('.'))){
                     try {
@@ -316,7 +334,7 @@ class ArchivosController {
             }
 
         }
-          def par
+        def par
         if(rutaActual.length()>=grailsApplication.config.images.location.toString().length()){
             par=rutaActual.substring(grailsApplication.config.images.location.toString().length())
         }
@@ -335,46 +353,55 @@ class ArchivosController {
             println rutaActual
             println "El archivo se llama: " + archivoIt
             
-        if(rutaActual != null){
-            def archivo = dominio.Archivo.findByRuta(rutaActual + File.separatorChar.toString() + archivoIt)
-            if(!archivo){
-                archivo = new dominio.Archivo(ruta:rutaActual + File.separatorChar.toString() + archivoIt, nombre:archivoIt)
-                archivo.save()
-            }
-
-        println "Etiquetas parametro: " + params.etiquetas
-          if(params.etiquetas != ""){
-            def listaPalabras = obtenerPalabrasClave(params.etiquetas)
-            println "Lista obtenida" + listaPalabras
-            listaPalabras.each{palabra->
-                palabra=palabra.toLowerCase()
-                def tag = dominio.PalabraClave.findByPalabraClave(palabra)
-                if(tag==null){
-
-                    tag = new dominio.PalabraClave(palabraClave:palabra)
-                    tag.save()
-                }   
-                println "Intentando meter la palabra: " + tag
-               try { 
-                    tag.addToArchivos(archivo)
-                    tag.save(flush: true)
-
-                    archivo.addToPalabrasClave(tag)
-                        archivo.save(flush: true)
+            if(rutaActual != null){
+                def directorio = dominio.Directorio.findByRuta(rutaActual)
+                if(directorio==null){
+                    directorio = new dominio.Directorio(ruta:rutaActual)
+                    directorio.save()
                 }
-                catch (Exception e) {
-                        println "ocurrio la exepcion" + e
+                def archivo = dominio.Archivo.findByRuta(rutaActual + File.separatorChar.toString() + archivoIt)
+                if(!archivo){
+                    archivo = new dominio.Archivo(ruta:rutaActual + File.separatorChar.toString() + archivoIt, 
+                        nombre:archivoIt,directorio:directorio)
+                    archivo.save()
                 }
-                if((tags.findIndexOf{it.id == tag.id}) == -1){
-                    tags.add(tag)
+                
+                directorio.addToArchivos(archivo)
+                directorio.save()
+
+                println "Etiquetas parametro: " + params.etiquetas
+                if(params.etiquetas != ""){
+                    def listaPalabras = obtenerPalabrasClave(params.etiquetas)
+                    println "Lista obtenida" + listaPalabras
+                    listaPalabras.each{palabra->
+                        palabra=palabra.toLowerCase()
+                        def tag = dominio.PalabraClave.findByPalabraClave(palabra)
+                        if(tag==null){
+
+                            tag = new dominio.PalabraClave(palabraClave:palabra)
+                            tag.save()
+                        }   
+                        println "Intentando meter la palabra: " + tag
+                        try { 
+                            tag.addToArchivos(archivo)
+                            tag.save(flush: true)
+
+                            archivo.addToPalabrasClave(tag)
+                            archivo.save(flush: true)
+                        }
+                        catch (Exception e) {
+                            println "ocurrio la exepcion" + e
+                        }
+                        if((tags.findIndexOf{it.id == tag.id}) == -1){
+                            tags.add(tag)
+                        }
+                    }
                 }
-            }
-        }
-        println "Ahora los tags son: " + tags
+                println "Ahora los tags son: " + tags
             
-         }
+            }
         }
-       // flash.message = 'Los cambios se han aplicado correctamente'
+        // flash.message = 'Los cambios se han aplicado correctamente'
         render (template:'listaPropiedades', model:[nombres:listaArchivosMarcados, tags:tags])
         
     }
@@ -386,66 +413,78 @@ class ArchivosController {
         if(rutaAct.length()>=grailsApplication.config.images.location.toString().length()){
             rutaAct=rutaAct.substring(grailsApplication.config.images.location.toString().length())
             for(int i=0;i<rutaAct.size();i++){
-                    if (rutaAct[i] == File.separatorChar.toString()){
-                       println "posicion " + i
-                       listaRutas.add(rutaAct.substring(0,i).trim())
-                       println "Ruta " + rutaAct.substring(0,i).trim()
-                       rutaAct = rutaAct.substring(rutaAct.substring(0,i).size()+1).trim()
-                       i= 0
-                    }
-                 }
-                 listaRutas.add(rutaAct.trim())
-                 println "nombre archivo " + rutaAct
-                 listaRutas.each{nombre->
-                    println "lista nombres " + nombre
-                 }
+                if (rutaAct[i] == File.separatorChar.toString()){
+                    println "posicion " + i
+                    listaRutas.add(rutaAct.substring(0,i).trim())
+                    println "Ruta " + rutaAct.substring(0,i).trim()
+                    rutaAct = rutaAct.substring(rutaAct.substring(0,i).size()+1).trim()
+                    i= 0
+                }
+            }
+            listaRutas.add(rutaAct.trim())
+            println "nombre archivo " + rutaAct
+            listaRutas.each{nombre->
+                println "lista nombres " + nombre
+            }
         }
-        }
+    }
     
     def obtenerPalabrasClave(String palabras) {
         println "Comiezo de phraser para separar palabras clave..."
         println "las palabras son: " + palabras
         def listaPalabras = []
         for(int i=0;i<palabras.size();i++){
-                if (palabras[i] == " "){
-                   println "posicion " + i
-                   listaPalabras.add(palabras.substring(0,i).trim())
-                   println "Palabra " + palabras.substring(0,i).trim()
-                   palabras = palabras.substring(palabras.substring(0,i).size()+1).trim()
-                   i= 0
-                }
-             }
-             listaPalabras.add(palabras.trim())
-             println "nombre archivo " + palabras
-             listaPalabras.each{nombre->
-                println "lista nombres " + nombre
-             }
-       }
+            if (palabras[i] == " "){
+                println "posicion " + i
+                listaPalabras.add(palabras.substring(0,i).trim())
+                println "Palabra " + palabras.substring(0,i).trim()
+                palabras = palabras.substring(palabras.substring(0,i).size()+1).trim()
+                i= 0
+            }
+        }
+        listaPalabras.add(palabras.trim())
+        println "nombre archivo " + palabras
+        listaPalabras.each{nombre->
+            println "lista nombres " + nombre
+        }
+    }
     def listaDirBuscado =[]
-    def comenzarRecursivo(){
+    def motorBusqueda(){
+        def listaPalabras = obtenerPalabrasClave(params.busqueda)
+        println "Lista de nombres para buscar en la base: " + listaPalabras
+        def archivosXPalabraClave = [] 
+        listaPalabras.each{palabraL ->
+            println "Buscando en la base: " + palabraL
+            
+            def coso = dominio.Directorio.executeQuery("select DISTINCT a "+
+                "from Archivo a, PalabraClave pc, Directorio d "+
+                "where d.Archivos = a and a.palabrasClave = pc and " +
+                "pc.palabraClave like :palabra order by a",[palabra:"%"+palabraL+"%"])
+            //.each{
+              //      dir->if(!archivosXPalabraClave.contains(arch))archivosXPalabraClave.add(arch)
+            //}
+            println "Coso este: "  + coso
+        }
+        println "Archivos bd: " + archivosXPalabraClave 
         def f = new File(rutaActual)
         listaDirBuscado=[]
         println "Comienzo busqueda recursiva en la ruta: " + rutaActual
         def resu=busquedaRecursiva(f, params.busqueda)
-        println resu
+        println "Archivos encontrados: " + resu
         render (template:'resultadosBusqueda', model:[resu])
         
     }
     def busquedaRecursiva(File f, String nombre){
         def listaArchivos = []
-        def a = dominio.Archivo.executeQuery("select archivo.nombre from palabra_clave, archivo_palabras_clave, archivo where palabra_clave like '%pr%' and palabra_clave.id=archivo_palabras_clave.palabra_clave_id and archivo_palabras_clave.archivo_id=archivo.id")
-        println = "Archivos bd: " + a
         f.eachFile(FileType.FILES){archivo->
-                def nombreArchivo = archivo.getPath().toString().substring(archivo.getPath().toString().lastIndexOf(File.separatorChar.toString())+1)
-                println "Nombre: " + nombreArchivo
-                if(nombreArchivo.contains(nombre)){
-                    listaArchivos.add(archivo.getPath().toString())
-                }
+            def nombreArchivo = archivo.getPath().toString().substring(archivo.getPath().toString().lastIndexOf(File.separatorChar.toString())+1)
+            if(nombreArchivo.contains(nombre)){
+                listaArchivos.add(archivo.getPath().toString())
             }
-            if(listaArchivos){
-                println "Directorio: " + f.getPath().toString()
-                listaDirBuscado.add(directorio:f.getPath().toString(),archivos:listaArchivos)
-            }
+        }
+        if(listaArchivos){
+           listaDirBuscado.add(directorio:f.getPath().toString(),archivos:listaArchivos)
+        }
         f.eachDir{dir ->
             busquedaRecursiva(dir,nombre)
         }

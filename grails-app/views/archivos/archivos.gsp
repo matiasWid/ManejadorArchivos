@@ -20,7 +20,7 @@
                     <ul>
                         <li>
                             <g:formRemote name="busquedaFrm" on404="alert('not found!')" update="listaDirectorios"
-                            url="[controller: 'archivos', action:'comenzarRecursivo']">
+                            url="[controller: 'archivos', action:'motorBusqueda']">
                                 <g:textField name="busqueda" value=""
                                 placeholder="Ingrese el texto a buscar" required="true"/>
                                      <span class="button"><g:actionSubmit class="upload" value="Buscar"/></span>

@@ -222,7 +222,7 @@ header {
 		text-align: rIght;
 	}
 
-div div a.folder_link {
+/*div div a.folder_link {
 	display: block;
 	width: 270px;
 	height: 87px;
@@ -231,20 +231,20 @@ div div a.folder_link {
 	font-size: 24px;
 	text-decoration: none;
 	line-height: 87px;
-}
+}*/
 
 	div div a.folder_link:hover {
 		background-position: 0 0;
 		text-decoration: underline;
 	}
 
-div div a.folder_link_collapsed {
+/*div div a.folder_link_collapsed {
 	background: url(resource:resource:resource:/images/collapsed.jpg) no-repeat 0 -87px;
-}
+}*/
 
-div div a.folder_link_expanded {
+/*div div a.folder_link_expanded {
 	background: url(../images/expanded.jpg) no-repeat 0 -87px;
-}
+}*/
 	
 div div div.folder_content {
 	padding: 0 0 0 25px;
