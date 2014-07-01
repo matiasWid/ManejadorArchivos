@@ -448,29 +448,39 @@ class ArchivosController {
             println "lista nombres " + nombre
         }
     }
+    
     def listaDirBuscado =[]
     def motorBusqueda(){
         def listaPalabras = obtenerPalabrasClave(params.busqueda)
+        listaDirBuscado=[]
         println "Lista de nombres para buscar en la base: " + listaPalabras
-        def archivosXPalabraClave = [] 
+        def archivosXPalabraClave = []
+        def f = new File(rutaActual)
         listaPalabras.each{palabraL ->
             println "Buscando en la base: " + palabraL
             
-            def coso = dominio.Directorio.executeQuery("select DISTINCT a "+
-                "from Archivo a, PalabraClave pc, Directorio d "+
-                "where d.Archivos = a and a.palabrasClave = pc and " +
-                "pc.palabraClave like :palabra order by a",[palabra:"%"+palabraL+"%"])
-            //.each{
-              //      dir->if(!archivosXPalabraClave.contains(arch))archivosXPalabraClave.add(arch)
-            //}
-            println "Coso este: "  + coso
+            dominio.Directorio.executeQuery("select DISTINCT d "+
+                "from Directorio d inner join d.archivos a inner join a.palabrasClave pc " +
+                "where pc.palabraClave like :palabra and d.ruta like :rutaAct order by d",
+                [palabra:"%"+palabraL+"%", 
+                rutaAct: f.getPath().toString().replace(File.separatorChar.toString(),"_")+"%"]).each{
+                    dir->if(!archivosXPalabraClave.contains(dir)){
+                        def listaArchivos=[]
+                        dir.archivos.each{arch->
+                            listaArchivos.add(arch.nombre)
+                        }
+                        listaDirBuscado.add(directorio:dir.ruta,archivos:listaArchivos)
+                    }
+            }
         }
-        println "Archivos bd: " + archivosXPalabraClave 
-        def f = new File(rutaActual)
-        listaDirBuscado=[]
+        //println "Archivos bd: " + archivosXPalabraClave 
+        
+        
         println "Comienzo busqueda recursiva en la ruta: " + rutaActual
         def resu=busquedaRecursiva(f, params.busqueda)
         println "Archivos encontrados: " + resu
+        def listaFinalArchivos=[]
+        
         render (template:'resultadosBusqueda', model:[resu])
         
     }
