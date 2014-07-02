@@ -12,11 +12,13 @@
                     </thead>
                     <tbody>
                         <!--se listan los directorios-->
-                        <%def pos=0%>
+                        <%def pos=0
+                        %>
+                        
                         <g:each in="${listaDirBuscado}" status="i" var="listaInstance">
                             <%
-                            if ((listaInstance.directorio.toString()+File.separatorChar.toString()).size()!=grailsApplication.config.images.location.toString().size()){
-                                def nombreCarpeta = listaInstance.directorio.toString().substring(grailsApplication.config.images.location.toString().size())
+                            if ((listaInstance.ruta.toString()+File.separatorChar.toString()).size()!=grailsApplication.config.images.location.toString().size()){
+                                def nombreCarpeta = listaInstance.ruta.toString().substring(grailsApplication.config.images.location.toString().size())
                                 %>
                                 <tr class="${(pos % 2) == 0 ? 'odd' : 'even'}">
                                 <td>
@@ -25,7 +27,7 @@
                                                         params='[ruta : "${nombreCarpeta.replace(File.separatorChar.toString(), '|')}"]'>
                                              <img src="../images/skin/folder-icon.png">
                                             </img>           
-                                            ${listaInstance.directorio.toString().substring(listaInstance.directorio.toString().lastIndexOf(File.separatorChar.toString())+1)}
+                                            ${listaInstance.ruta.toString().substring(listaInstance.ruta.toString().lastIndexOf(File.separatorChar.toString())+1)}
                                         </g:link>      
                                         <%pos=pos+1%>
                                     </label>
@@ -63,13 +65,13 @@
                                     <td>
                                         <label> 
                                             <g:checkBox id="${pos}"
-                                            value="${listaArchivos.toString()}"
+                                            value="${listaArchivos.nombre.toString()}"
                                             name='check.${pos}'
                                             onchange="hacerClic()"
                                             checked="${false}"/> 
                                             <g:link action='archivos'
-                                                params='[ruta : "${listaArchivos.toString().replace(File.separatorChar.toString(), '|')}"]'>
-                                                ${listaArchivos.toString().substring(listaArchivos.toString().lastIndexOf(File.separatorChar.toString())+1)}
+                                                params='[ruta : "${listaArchivos.nombre.toString().replace(File.separatorChar.toString(), '|')}"]'>
+                                                ${listaArchivos.nombre.toString().substring(listaArchivos.nombre.toString().lastIndexOf(File.separatorChar.toString())+1)}
                                             </g:link>
                                         </label>
                                     </td>

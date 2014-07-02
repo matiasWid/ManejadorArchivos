@@ -450,38 +450,58 @@ class ArchivosController {
     }
     
     def listaDirBuscado =[]
+    
     def motorBusqueda(){
         def listaPalabras = obtenerPalabrasClave(params.busqueda)
         listaDirBuscado=[]
-        println "Lista de nombres para buscar en la base: " + listaPalabras
-        def archivosXPalabraClave = []
         def f = new File(rutaActual)
-        listaPalabras.each{palabraL ->
-            println "Buscando en la base: " + palabraL
+        println "Lista de nombres para buscar en la base: " + listaPalabras
+        def listaDirBuscado = dominio.Directorio.executeQuery("select DISTINCT d "+
+                "from Directorio d inner join d.archivos a " +
+                "where a.nombre like :nombre and " + 
+                "d.ruta like :rutaAct order by d.ruta, d.archivos.nombre",
+                [nombre:"%"+params.busqueda+"%",
+                rutaAct: f.getPath().toString().replace(File.separatorChar.toString(),"_")+"%"])
+        
+        println listaDirBuscado.ruta
+//        .each{
+//                    dir->if(!archivosXPalabraClave.contains(dir)){
+//                        def listaArchivos=[]
+//                        dir.archivos.each{arch->
+//                            listaArchivos.add(arch.nombre)
+//                        }
+//                        listaDirBuscado.add(directorio:dir.ruta,archivos:listaArchivos)
+//                    }
+//            }
+//        listaPalabras.each{palabraL ->
+//            println "Buscando en la base: " + palabraL
+//            
             
-            dominio.Directorio.executeQuery("select DISTINCT d "+
-                "from Directorio d inner join d.archivos a inner join a.palabrasClave pc " +
-                "where pc.palabraClave like :palabra and d.ruta like :rutaAct order by d",
-                [palabra:"%"+palabraL+"%", 
-                rutaAct: f.getPath().toString().replace(File.separatorChar.toString(),"_")+"%"]).each{
-                    dir->if(!archivosXPalabraClave.contains(dir)){
-                        def listaArchivos=[]
-                        dir.archivos.each{arch->
-                            listaArchivos.add(arch.nombre)
-                        }
-                        listaDirBuscado.add(directorio:dir.ruta,archivos:listaArchivos)
-                    }
-            }
-        }
+            
+//            dominio.Directorio.executeQuery("select DISTINCT d "+
+//                "from Directorio d inner join d.archivos a inner join a.palabrasClave pc " +
+//                "where (pc.palabraClave like :palabra or a.nombre like :nombre) and " + 
+//                "d.ruta like :rutaAct order by d",
+//                [palabra:"%"+palabraL+"%", nombre:"%"+palabraL+"%",
+//                rutaAct: f.getPath().toString().replace(File.separatorChar.toString(),"_")+"%"]).each{
+//                    dir->if(!archivosXPalabraClave.contains(dir)){
+//                        def listaArchivos=[]
+//                        dir.archivos.each{arch->
+//                            listaArchivos.add(arch.nombre)
+//                        }
+//                        listaDirBuscado.add(directorio:dir.ruta,archivos:listaArchivos)
+//                    }
+//            }
+//        }
         //println "Archivos bd: " + archivosXPalabraClave 
         
         
-        println "Comienzo busqueda recursiva en la ruta: " + rutaActual
-        def resu=busquedaRecursiva(f, params.busqueda)
-        println "Archivos encontrados: " + resu
-        def listaFinalArchivos=[]
+//        println "Comienzo busqueda recursiva en la ruta: " + rutaActual
+//        def resu=busquedaRecursiva(f, params.busqueda)
+//        println "Archivos encontrados: " + resu
+//        def listaFinalArchivos=[]
         
-        render (template:'resultadosBusqueda', model:[resu])
+        render (template:'resultadosBusqueda',model:[listaDirBuscado:listaDirBuscado])
         
     }
     def busquedaRecursiva(File f, String nombre){
