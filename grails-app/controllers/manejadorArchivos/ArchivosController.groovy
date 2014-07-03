@@ -73,6 +73,7 @@ class ArchivosController {
     def listaPropiedades= {
         nombreArchivos=[]
         params.check.each
+        println "Comienza lista propiedades"
         {
             nombre->
             if(nombre.value){
@@ -258,7 +259,11 @@ class ArchivosController {
         if(params.dirName != null && rutaActual != null){
             def d1= new File(rutaActual + File.separatorChar + params.dirName)
             d1.mkdir()
-            
+            def directorio = dominio.Directorio.findByRuta(ruta:d1.getPath())
+               if(directorio==null){
+                   directorio = new dominio.Directorio(ruta:d1.getPath())
+                   directorio.save()
+            }
         }
         def par
         if(rutaActual.length()>=grailsApplication.config.images.location.toString().length()){
@@ -456,14 +461,14 @@ class ArchivosController {
         listaDirBuscado=[]
         def f = new File(rutaActual)
         println "Lista de nombres para buscar en la base: " + listaPalabras
-        def listaDirBuscado = dominio.Directorio.executeQuery("select DISTINCT d "+
-                "from Directorio d inner join d.archivos a " +
-                "where a.nombre like :nombre and " + 
-                "d.ruta like :rutaAct order by d.ruta, d.archivos.nombre",
+        def listaDirBuscado = dominio.Directorio.executeQuery("select distinct d, a "+
+                "from Directorio d inner join fetch d.archivos a " +
+                "where lower(a.nombre) like lower(:nombre) and " + 
+                "lower(d.ruta) like lower(:rutaAct) order by d.ruta, a.nombre",
                 [nombre:"%"+params.busqueda+"%",
                 rutaAct: f.getPath().toString().replace(File.separatorChar.toString(),"_")+"%"])
-        
-        println listaDirBuscado.ruta
+        println "Buscando en la ruta: " + f.getPath().toString().replace(File.separatorChar.toString(),"_")
+        println listaDirBuscado.archivos
 //        .each{
 //                    dir->if(!archivosXPalabraClave.contains(dir)){
 //                        def listaArchivos=[]
@@ -504,6 +509,7 @@ class ArchivosController {
         render (template:'resultadosBusqueda',model:[listaDirBuscado:listaDirBuscado])
         
     }
+    
     def busquedaRecursiva(File f, String nombre){
         def listaArchivos = []
         f.eachFile(FileType.FILES){archivo->
@@ -519,5 +525,40 @@ class ArchivosController {
             busquedaRecursiva(dir,nombre)
         }
         return [ listaDirBuscado: listaDirBuscado]
+    }
+    
+    def indexadoRecursivo(File f){
+        def directorio = dominio.Directorio.findByRuta(f.getPath())
+        println "Recur en directorio: " + f.getPath()
+        if(directorio==null){
+            directorio = new dominio.Directorio(ruta:f.getPath())
+            directorio.save(flush:false)
+            println "Se creo el dir en la bd: " + directorio
+        }
+        f.eachFile(FileType.FILES){archivo->
+            def nombreArchivo = archivo.getPath().toString().substring(archivo.getPath().toString().lastIndexOf(File.separatorChar.toString())+1)
+            def rutaArchivo = archivo.getPath().toString()
+            println "Metiendo el archivo en la bd: " + nombreArchivo
+            if(rutaArchivo!=null){
+                def archivoBd = dominio.Archivo.findByRuta(rutaArchivo)
+                
+                if(archivoBd==null){
+                    archivoBd = new dominio.Archivo(ruta:rutaArchivo,nombre:nombreArchivo,directorio:directorio)
+                    archivoBd.save(flush:false)
+                    println "Archivo ingresado en la bd: " + archivoBd
+                }
+            }
+        }
+    
+        f.eachDir{dir ->
+            indexadoRecursivo(dir)
+        }
+    }
+    
+    def reIndexar = {
+        println "Llama indexado"
+        def f = new File(grailsApplication.config.images.location.toString())
+        indexadoRecursivo(f)
+        render("reindexado correcto")
     }
 }
